@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>演示场景 1：老板娘经营总控台 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 350px 1fr 300px; gap: 24px; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; }
+        .section-title { font-size: 16px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;}
+        
+        /* 剧情事件卡 */
+        .event-card { background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(255,255,255,0.02)); border: 1px solid var(--card-border); padding: 20px; border-radius: 12px; margin-bottom: 16px; position: relative; overflow: hidden; transition: 0.3s;}
+        .event-card:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-2px);}
+        .event-card::before { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: var(--primary); }
+        .event-card.danger::before { background: var(--warning); }
+        .event-card.success::before { background: var(--success); }
+        
+        .event-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;}
+        .event-tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600;}
+        .tag-danger { background: rgba(255,51,102,0.15); color: #fda4af; border: 1px solid rgba(255,51,102,0.3);}
+        .tag-primary { background: rgba(0,229,255,0.15); color: #00e5ff; border: 1px solid rgba(0,229,255,0.3);}
+        .tag-success { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3);}
+        
+        .event-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 8px;}
+        .event-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;}
+        
+        .event-actions { display: flex; gap: 12px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; align-items: center;}
+        .module-link { font-size: 12px; color: var(--primary); text-decoration: none; font-weight: 600; border-bottom: 1px dashed var(--primary); padding-bottom: 2px;}
+        .module-link:hover { color: #fff; border-bottom-color: #fff;}
+        
+        /* 5联动状态卡 */
+        .overview-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;}
+        .overview-box { padding: 16px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--card-border); text-align: center; position: relative;}
+        .pulse-badge { position: absolute; top: -6px; right: -6px; background: var(--warning); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 600; box-shadow: 0 0 10px rgba(255,51,102,0.5);}
+        
+        .nav-scene { display: block; text-decoration: none; padding: 16px; background: linear-gradient(90deg, var(--warning), #ff6b6b); color: #fff; font-weight: 800; border-radius: 8px; text-align: center; margin-top: 20px; transition: 0.3s; box-shadow: 0 4px 20px rgba(255,51,102,0.4); text-transform: uppercase; letter-spacing: 1px;}
+        .nav-scene:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            <span>灵谋AI 今日作战指挥台</span>
+            <span style="font-size: 12px; color: var(--text-muted); margin-left: 12px;">不要看功能目录，只看今天系统替你挡下了多少子弹。</span>
+        </div>
+        <div><button class="btn-primary" onclick="lmDB.reset()" style="background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 6px 16px; font-size: 12px;">↺ 剧情重置</button></div>
+    </div>
+
+    <!-- 模块联动总览区 (横向拉通) -->
+    <div class="overview-grid">
+        <div class="overview-box">
+            <div class="pulse-badge">新战机</div>
+            <div style="font-size: 12px; color: var(--text-muted);">流量嗅探</div>
+            <div style="font-size: 18px; font-weight: 600; color: #fff; margin-top: 4px;">1 个风口</div>
+        </div>
+        <div class="overview-box">
+            <div style="font-size: 12px; color: var(--text-muted);">内容矩阵</div>
+            <div style="font-size: 18px; font-weight: 600; color: #fff; margin-top: 4px;">待发 <span style="color: var(--primary);" id="st-content">0</span> 篇</div>
+        </div>
+        <div class="overview-box" style="border-color: rgba(255,51,102,0.3); background: rgba(255,51,102,0.05);">
+            <div class="pulse-badge">高危</div>
+            <div style="font-size: 12px; color: var(--warning);">夜间客诉拦截</div>
+            <div style="font-size: 18px; font-weight: 800; color: #fff; margin-top: 4px;"><span style="color: var(--warning);" id="st-kefu">1</span> 单预警</div>
+        </div>
+        <div class="overview-box">
+            <div style="font-size: 12px; color: var(--text-muted);">店务SOP流转</div>
+            <div style="font-size: 18px; font-weight: 600; color: #fff; margin-top: 4px;"><span style="color: var(--success);">100% 达标</span></div>
+        </div>
+        <div class="overview-box">
+            <div style="font-size: 12px; color: var(--text-muted);">员工战力状态</div>
+            <div style="font-size: 18px; font-weight: 600; color: #fff; margin-top: 4px;"><span style="color: var(--success);">健康</span></div>
+        </div>
+    </div>
+
+    <div class="grid-layout">
+        <!-- 左侧：全局诊断 -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="glass-card">
+                <div class="section-title">📊 昨夜至今日清晨：战损与挽回账本</div>
+                <div style="font-size: 13px; color: var(--text-muted); line-height: 1.8;">
+                    系统在您休息的 8 小时内自动保持运转，这是目前的战果结算：<br><br>
+                    <span style="color: #fff;">✅ 拦截夜间咨询流失</span>：<span style="color: var(--success); font-weight: 600;">挽回 3 单预约</span> (价值约 ¥1,200)<br>
+                    <span style="color: #fff;">🚨 发生 1 起高危退款客诉</span>：客户极度暴躁。AI 已强制接管安抚稳住情绪，并锁死工单。（若未拦截，预计直接流失 <span style="color: var(--warning); font-weight: 600;">¥19,800 年卡</span>）<br>
+                    <span style="color: #fff;">📈 探测到同城流量红利</span>：#入夏美白大作战# 热度飙升，建议立刻承接这波流量。
+                </div>
+            </div>
+            
+            <div class="glass-card" style="flex: 1;">
+                <div class="section-title">💡 老板娘自然语言调度台</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">遇到任何突发状况，直接在这里下令，系统自动调动 10 个模块执行。</div>
+                <textarea style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #475569; padding: 12px; border-radius: 8px; color: #fff; font-size: 13px; resize: none; margin-bottom: 12px;" rows="3" placeholder="例如：给昨天没来的客户发个短信。"></textarea>
+                <button class="btn-primary" style="width: 100%; font-size: 12px;">一键拆解成 SOP 派发员工</button>
+                <div style="margin-top: 16px; text-align: center;">
+                    <a href="老板参谋.html" class="module-link">深入【老板参谋】查看财务沙盘推演 →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 中间：核心作战卡片流 (事件驱动) -->
+        <div class="glass-card" style="padding: 0; background: transparent; border: none;">
+            <div class="section-title" style="padding: 0 0 12px 0;">🎯 今日必须由您拍板的经营事件</div>
+            
+            <!-- 危机处理剧情卡 -->
+            <div class="event-card danger">
+                <div class="event-header">
+                    <span class="event-tag tag-danger">高危拦截 · 距离爆发仅剩 2 小时</span>
+                    <span style="font-size: 12px; color: var(--text-muted);">凌晨 02:15 发生</span>
+                </div>
+                <div class="event-title">“脸全红了！”王女士深夜爆发严重客诉</div>
+                <div class="event-desc">
+                    该客户是价值 2 万元的 VIP 年卡核心客户，半夜做完水光针对泛红极度不满要求全额退款。系统已在半夜**自动安抚**，并打上“怕毁容”、“情绪易怒”标签，防止了当场退款惨案。
+                </div>
+                <div class="event-actions">
+                    <button class="btn-primary" style="background: var(--warning); border: none; padding: 6px 16px; font-size: 12px;" onclick="showToast('已强制置顶下发！芳芳将在企微收到强提醒', 'success')">紧急授权：强制派单给金牌店长芳芳处理</button>
+                    <a href="智能客服.html" class="module-link" style="margin-left: auto;">看【智能客服】是如何半夜安抚她的</a>
+                </div>
+            </div>
+
+            <!-- 赚钱机会剧情卡 -->
+            <div class="event-card primary">
+                <div class="event-header">
+                    <span class="event-tag tag-primary">抢钱战机 · 同城流量风口</span>
+                    <span style="font-size: 12px; color: var(--text-muted);">系统自动嗅探</span>
+                </div>
+                <div class="event-title">同城 5 公里发现“入夏美白”搜索量暴增 400%</div>
+                <div class="event-desc">
+                    附近写字楼女白领需求激增。系统已连夜生成了一套《入夏美白大作战》的拓客全案，预估可以**带来 15-20 人到店**，成本仅需 ¥500。
+                </div>
+                <div class="event-actions">
+                    <button class="btn-primary" style="padding: 6px 16px; font-size: 12px;">一键授权：启动全案并派发海报任务</button>
+                    <div style="margin-left: auto; display: flex; gap: 12px;">
+                        <a href="获客引流官.html" class="module-link">看【获客引流官】的同城雷达分析</a>
+                        <a href="内容策划官.html" class="module-link">去【内容策划官】看生成的剧本</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 人员成长剧情卡 -->
+            <div class="event-card success">
+                <div class="event-header">
+                    <span class="event-tag tag-success">人员管理 · 成长与闭环</span>
+                    <span style="font-size: 12px; color: var(--text-muted);">员工能力雷达</span>
+                </div>
+                <div class="event-title">新员工小李已通关《客诉情景模拟》对练</div>
+                <div class="event-desc">
+                    她在没有拿真实客户练手的情况下，被 AI 刁难了 3 次，最终以 92 分的成绩掌握了降维打击话术。
+                </div>
+                <div class="event-actions">
+                    <div style="font-size: 12px; color: var(--success); font-weight: 600;">✅ 系统已自动为她解锁高级客诉处理权限</div>
+                    <div style="margin-left: auto; display: flex; gap: 12px;">
+                        <a href="员工教练.html" class="module-link">去【员工教练】看她的对练录音</a>
+                        <a href="岗位成长教练.html" class="module-link">看她的【岗位晋升地图】进度</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：深入剧情的入口 -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="glass-card" style="border: 1px solid var(--warning); position: relative; overflow: hidden; background: rgba(255,51,102,0.05);">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--warning);"></div>
+                <h3 style="margin-top: 0; color: #fff;">🔥 沉浸式剧情体验指南</h3>
+                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 12px;">
+                    刚才总控台提示了**“王女士半夜爆发客诉”**。如果您不信 AI 能半夜稳住客户，请直接进入下一个场景查监控：
+                </p>
+                <div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; font-size: 12px; color: #cbd5e1; margin: 16px 0; border-left: 2px solid var(--warning);">
+                    您将化身为那名半夜两点发火的王女士，看看系统的**【智能客服】**是如何应对危机、隐形打标，并把压力传导给后方的。
+                </div>
+                <a href="场景演示_客户端模拟.html" class="nav-scene">猛戳！进入【客户端】亲自找茬 →</a>
+            </div>
+            
+            <div class="glass-card">
+                <div class="section-title">其余常态化支撑系统 (挂机中)</div>
+                <ul style="font-size: 13px; color: var(--text-muted); line-height: 2; padding-left: 16px;">
+                    <li><a href="经营管家.html" style="color: var(--primary);">经营管家</a>：已自动下发今日晨会大纲</li>
+                    <li><a href="智脑总控.html" style="color: var(--primary);">智脑总控</a>：今日算力分配健康，成功防御违禁词 14 次</li>
+                    <li><a href="入行导师.html" style="color: var(--primary);">入行导师</a>：已暂停运行 (该店已度过新手期)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+</body>
+</html>

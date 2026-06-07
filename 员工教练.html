@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>员工教练 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 1fr 1fr; height: calc(100vh - 150px); gap: 24px;}
+        .course-card { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 16px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
+        
+        .chat-ui { background: #fff; border-radius: 12px; display: flex; flex-direction: column; height: 100%; overflow: hidden;}
+        .chat-head { background: #1e293b; padding: 16px; color: #fff; font-weight: 600; display: flex; justify-content: space-between; align-items: center;}
+        .chat-body { flex: 1; padding: 16px; background: #f1f5f9; overflow-y: auto;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>员工教练 (客诉情景模拟与测试)</span>
+        </div>
+        <a href="场景演示_员工端模拟.html" class="back-btn">← 返回员工企微端</a>
+    </div>
+
+    <!-- 价值横幅 -->
+    <div class="value-banner" style="background: rgba(0,229,255,0.1); border: 1px solid var(--primary); padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🎯 解决什么经营痛点：<span style="font-weight: 400; color: var(--text-muted);">解决员工培训成本高、实战经验不足的问题。让新员工在 AI 的刁难下迅速成长，不拿真实客户练手。</span></div>
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🤝 协同作战：<span style="font-weight: 400; color: var(--text-muted);">测试成绩直接回传至【岗位成长教练】形成雷达图，供老板查看。</span></div>
+    </div>
+
+    <div class="grid-layout">
+        <div class="glass-card" style="overflow-y: auto;">
+            <div class="section-title">近期必修知识与测试区</div>
+            
+            <div class="course-card" style="border-left: 3px solid var(--warning);">
+                <div>
+                    <div style="font-weight: 600; font-size: 14px; color: #fff;">实战模拟：刁钻客户的退款要求</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">测试限时：10 分钟 | 难度：⭐⭐⭐⭐</div>
+                </div>
+                <button class="btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="enterSim(this)">进入对练舱</button>
+            </div>
+            
+            <div class="course-card">
+                <div>
+                    <div style="font-weight: 600; font-size: 14px; color: #fff;">理论知识：水光针后注意事项</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">完成度：已通过</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 24px; background: rgba(16,185,129,0.1); padding: 16px; border-radius: 8px; border: 1px solid var(--success);">
+                <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 8px;">教练反馈点评</div>
+                <div style="font-size: 12px; color: #cbd5e1;">上一次对练成绩：78分。<br>您的共情能力很好，但是在抛出替代方案时不够果断，容易被客户带着节奏走。建议多复习《降维打击法》。</div>
+            </div>
+        </div>
+
+        <div class="chat-ui">
+            <div class="chat-head">
+                <div>AI 对练舱：正在模拟【暴躁的敏敏】</div>
+                <div style="font-size: 12px; color: var(--warning);">AI 正在扮演客户</div>
+            </div>
+            <div class="chat-body">
+                <div style="text-align: left;"><span style="background: #fff; color: #000; padding: 8px 12px; border-radius: 8px; display: inline-block;">你们那个项目做完我脸都肿了！我要退款，还要赔偿！太坑人了吧！</span></div>
+                <div style="text-align: right; margin-top: 12px;"><span style="background: #3b82f6; color: #fff; padding: 8px 12px; border-radius: 8px; display: inline-block;">您先别着急，我们这个项目做完泛红是正常的，过几天就好了。</span></div>
+                
+                <!-- AI 判卷卡片 -->
+                <div style="margin-top: 24px; background: #fee2e2; border-left: 4px solid #ef4444; padding: 12px; border-radius: 0 8px 8px 0;">
+                    <div style="font-size: 13px; font-weight: 600; color: #991b1b; margin-bottom: 4px;">教练判定：回复不合格 ❌</div>
+                    <div style="font-size: 12px; color: #7f1d1d;">错误原因：绝不能在客户暴怒时说“是正常的”，这会激化矛盾。正确做法是先安抚情绪，立刻邀请客户回店由店长亲自做舒缓修复。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        window.enterSim = function(btn) {
+            btn.innerHTML = '正在加载AI参数...';
+            setTimeout(() => {
+                btn.innerHTML = '已结束本次对练';
+                btn.style.background = '#e2e8f0';
+                btn.style.color = '#94a3b8';
+                btn.disabled = true;
+                showToast('对练完成！本次得分 92分，已计入岗位成长雷达。', 'success');
+            }, 1200);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>智能客服 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 1fr 1fr; height: calc(100vh - 150px); gap: 24px;}
+        .faq-card { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 12px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
+        .esc-card { background: rgba(255,51,102,0.1); border-left: 3px solid var(--warning); padding: 12px; border-radius: 8px; margin-bottom: 12px;}
+        .kw-tag { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; font-size: 12px; color: #cbd5e1; display: inline-block; margin: 4px;}
+        .kw-tag.danger { background: rgba(255,51,102,0.2); color: #fda4af; border: 1px solid rgba(255,51,102,0.5);}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>智能客服 (夜间接单与风控拦截)</span>
+        </div>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 返回总控台</a>
+    </div>
+
+    <!-- 价值横幅 -->
+    <div class="value-banner" style="background: rgba(0,229,255,0.1); border: 1px solid var(--primary); padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🎯 解决什么经营痛点：<span style="font-weight: 400; color: var(--text-muted);">解决员工下班后错失客资、面对客诉不懂安抚导致差评的问题。实现 7x24 小时无休接待与高危拦截。</span></div>
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🤝 协同作战：<span style="font-weight: 400; color: var(--text-muted);">发生高危拦截后，系统立即跨级报警，将任务置顶推送至【老板参谋】与【员工端待办】。</span></div>
+    </div>
+
+    <div class="grid-layout">
+        <div class="glass-card" style="overflow-y: auto;">
+            <div class="section-title">高频咨询拦截库 (省人工)</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">昨日系统自动接待 145 人次，为您节省约 1.5 个全职客服的人力。</div>
+            
+            <div class="faq-card">
+                <div>
+                    <div style="font-size: 13px; font-weight: 600; color: #fff;">Q: 你们店具体位置在哪里？好停车吗？</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">自动回复量：45次 (占比 31%)</div>
+                </div>
+                <button class="btn-primary" style="padding: 4px 8px; font-size: 11px; background: transparent; border: 1px solid var(--primary); color: var(--primary);">优化回复语</button>
+            </div>
+            
+            <div class="faq-card">
+                <div>
+                    <div style="font-size: 13px; font-weight: 600; color: #fff;">Q: 做完光子之后能不能化妆？</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">自动回复量：28次 (占比 19%)</div>
+                </div>
+                <button class="btn-primary" style="padding: 4px 8px; font-size: 11px; background: transparent; border: 1px solid var(--primary); color: var(--primary);">优化回复语</button>
+            </div>
+            
+            <div class="section-title" style="margin-top: 32px;">全域高危敏感词监控雷达</div>
+            <div style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px;">
+                <span class="kw-tag danger">退款</span>
+                <span class="kw-tag danger">毁容</span>
+                <span class="kw-tag danger">去工商局告你</span>
+                <span class="kw-tag danger">过敏</span>
+                <span class="kw-tag">效果不好</span>
+                <span class="kw-tag">太贵了</span>
+                <span class="kw-tag">排队太久</span>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 12px;">注：当客户聊天中触发红色词汇，AI 将停止营销动作，立刻切入安抚模式并升级给人工。</div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="section-title" style="color: var(--warning);">今日人工强制接管清单</div>
+            <div style="font-size: 12px; color: #cbd5e1; margin-bottom: 16px;">以下对话 AI 判定超出处理权限，已为您拦截并锁定。</div>
+            
+            <div class="esc-card">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <div style="font-weight: 600; font-size: 13px; color: #fff;">触发词：【过敏】【太红了】</div>
+                    <div style="font-size: 11px; color: #fda4af;">3 分钟前</div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; margin-bottom: 8px;">
+                    客户原话：“你们这是什么破仪器，我做完之后脸全红了，是不是过敏了？！”
+                </div>
+                <div style="font-size: 11px; color: var(--success);">
+                    AI 已安抚：“非常抱歉亲爱的，我这就让店长马上给您回电处理。”
+                </div>
+                <button class="btn-primary" style="width: 100%; margin-top: 12px; background: var(--warning); border: none;" onclick="dispatchEscalation(this)">强制将此单派给金牌店长芳芳处理</button>
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        window.dispatchEscalation = function(btn) {
+            btn.innerHTML = '派发中...';
+            setTimeout(() => {
+                let db = window.lmDB.get();
+                // Find pending boss tasks that might match this escalation and resolve them
+                db.tasks.forEach(t => {
+                    if(t.type === 'boss' && t.status === 'pending' && t.title.includes('客诉')) {
+                        t.status = 'dispatched';
+                    }
+                });
+                // Create task for employee
+                db.tasks.unshift({
+                    id: 't_esc_' + Date.now(),
+                    source: '智能客服 (拦截转交)',
+                    type: 'employee',
+                    priority: 'high',
+                    title: '🚨 紧急：高危客诉接管 (过敏/退款)',
+                    goal: '客户情绪激动，请立即致电安抚并预约到店免费舒缓',
+                    status: 'pending',
+                    targetRole: '员工'
+                });
+                db.backendStats.escalations += 1;
+                window.lmDB.save(db);
+                
+                btn.innerHTML = '已强制派单至店长工作台';
+                btn.style.background = 'var(--success)';
+                btn.disabled = true;
+                showToast('派单成功！芳芳已收到系统强提醒。', 'success');
+            }, 800);
+        };
+    </script>
+</body>
+</html>

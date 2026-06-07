@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>内容策划官 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 320px 1fr; height: calc(100vh - 150px); gap: 24px;}
+        .content-card { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 16px; border-radius: 12px; margin-bottom: 16px; display: flex; gap: 16px; transition: 0.2s;}
+        .thumb { width: 80px; height: 100px; background: #334155; border-radius: 8px;}
+        .meta-tag { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: #fff;}
+        .script-box { background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.8; color: #cbd5e1; margin-top: 16px; border-left: 2px solid var(--primary);}
+        
+        .timeline-item { position: relative; margin-bottom: 24px;}
+        .timeline-dot { position: absolute; left: -21px; top: 0; width: 10px; height: 10px; border-radius: 50%;}
+        
+        .platform-tabs { display: flex; gap: 8px; margin-top: 16px;}
+        .pt-tab { padding: 6px 12px; font-size: 12px; border: 1px solid var(--card-border); border-radius: 4px; cursor: pointer; color: var(--text-muted);}
+        .pt-tab.active { background: var(--primary); color: #000; border-color: var(--primary); font-weight: 600;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>内容策划官 (AI 内容生产线)</span>
+        </div>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 返回总控台</a>
+    </div>
+
+    <!-- 价值横幅 -->
+    <div class="value-banner" style="background: rgba(0,229,255,0.1); border: 1px solid var(--primary); padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🎯 解决什么经营痛点：<span style="font-weight: 400; color: var(--text-muted);">解决花重金请代运营依然没效果、没时间写脚本的问题。AI 自动完成从选题到多平台发布的闭环。</span></div>
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🤝 协同作战：<span style="font-weight: 400; color: var(--text-muted);">承接【获客引流官】推送的机会，生成稿件后可推送到总控台由老板一键发布。</span></div>
+    </div>
+
+    <div class="grid-layout">
+        <div class="glass-card">
+            <!-- 补充人设限制卡 -->
+            <div style="background: rgba(179,0,255,0.1); border: 1px solid var(--secondary); padding: 12px; border-radius: 8px; margin-bottom: 24px;">
+                <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 8px;">👤 预设老板娘人设限制</div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.6;">
+                    当前基调：专业、接地气、不卖焦虑。<br>
+                    违禁词：绝不使用“医美级”、“包治”等高危违禁词。<br>
+                    <span style="color: var(--secondary);">AI 生成的所有文案均受此人设控制。</span>
+                </div>
+            </div>
+
+            <div class="section-title">全域发布排期与状态</div>
+            <div style="border-left: 2px solid var(--card-border); padding-left: 16px; margin-left: 8px;" id="calendar-list">
+                <!-- dynamic timeline -->
+            </div>
+            
+            <button class="btn-primary" style="width: 100%; margin-top: 32px;" onclick="generateNewContent(this)">⚡ 承接热点：一键生成分发剧本</button>
+        </div>
+
+        <div class="glass-card">
+            <div class="section-title">AI 多平台剧本分镜台</div>
+            
+            <div id="script-preview-area">
+                <div style="color: var(--text-muted); font-size: 14px; padding: 40px; text-align: center;">请在左侧点击【一键生成】，查看 AI 如何一次性出三套不同平台调性的稿子。</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        function renderCalendar() {
+            let db = lmDB.get();
+            let html = '';
+            db.contentScripts.forEach(script => {
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background: ${script.color};"></div>
+                        <div style="font-weight: 600; font-size: 14px;">${script.date}：${script.type}</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">主题：${script.title} <span style="margin-left: 8px; color: ${script.color}">${script.status}</span></div>
+                    </div>
+                `;
+            });
+            document.getElementById('calendar-list').innerHTML = html;
+        }
+
+        window.generateNewContent = function(btnEl) {
+            btnEl.classList.add('btn-loading');
+            setTimeout(() => {
+                btnEl.classList.remove('btn-loading');
+                
+                lmDB.addContentScript('刚刚', '全域通发', '#入夏美白大作战#', '待老板审批', '#ff3366');
+                showToast('已生成针对 3 个平台的专用改写文案！', 'success');
+                renderCalendar();
+                
+                document.getElementById('script-preview-area').innerHTML = `
+                    <div class="content-card">
+                        <div class="thumb" style="background: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%22 y=%2255%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22white%22>▶</text></svg>') no-repeat center #ff3366; background-size: cover;"></div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">入夏美白大作战 - 引流计划</div>
+                            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                                <span class="meta-tag">预计爆流指数 95%</span>
+                                <span class="meta-tag" style="background: rgba(255,51,102,0.2); color: #ff3366;">待您一键发布</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="platform-tabs">
+                        <div class="pt-tab active" onclick="alert('已切换至抖音视觉流模式')">抖音 (视觉冲击)</div>
+                        <div class="pt-tab" onclick="alert('已切换至小红书种草模式')">小红书 (成分党种草)</div>
+                        <div class="pt-tab" onclick="alert('已切换至视频号科普模式')">视频号 (专业信任感)</div>
+                    </div>
+                    
+                    <div class="script-box" style="border-left-color: #ff3366; margin-top: 12px;">
+                        <span style="color: var(--text-muted); font-size: 11px;">当前展示：抖音版（黄金3秒法则）</span><br><br>
+                        [00:00 - 00:03] (视觉: 老板娘拿起防晒喷雾狂喷，音效放大)<br>
+                        台词：“还有半个月就入夏了，你以为喷成这样就不会黑了吗？”<br><br>
+                        [00:03 - 00:08] (视觉: 切换到仪器近景，展示强效补水效果)<br>
+                        台词：“别做梦了！真想夏天白得发光，看这台店里的镇店之宝。今天左下角，我给大家上个巨大的漏，只限同城的姐妹！”
+                    </div>
+                    
+                    <div style="margin-top: 24px; display: flex; gap: 12px;">
+                        <button class="btn-primary" onclick="pushToBoss(this)">推送至首页待办审批</button>
+                    </div>
+                `;
+            }, 1500);
+        };
+
+        window.pushToBoss = function(btn) {
+            btn.classList.add('btn-loading');
+            setTimeout(() => {
+                let db = window.lmDB.get();
+                db.tasks.unshift({
+                    id: 't_content_' + Date.now(),
+                    source: '内容策划官',
+                    type: 'boss',
+                    priority: 'normal',
+                    title: '审核【入夏美白大作战】分发矩阵脚本',
+                    goal: '确认无误后自动分发至抖音/小红书',
+                    status: 'pending',
+                    targetRole: '老板'
+                });
+                window.lmDB.save(db);
+                btn.classList.remove('btn-loading');
+                btn.innerText = '已推送至待办';
+                btn.style.background = 'var(--success)';
+                btn.disabled = true;
+                showToast('已推送到老板总控台待办区！', 'success');
+            }, 600);
+        };
+
+        window.addEventListener('lmDB_updated', renderCalendar);
+        renderCalendar();
+    </script>
+</body>
+</html>

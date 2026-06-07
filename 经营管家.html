@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>经营管家 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 1fr 1fr; height: calc(100vh - 150px); gap: 24px;}
+        .glass-card { overflow-y: auto; }
+        .sop-card { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 16px; border-radius: 8px; margin-bottom: 12px; transition: 0.2s;}
+        .sop-card:hover { border-color: var(--primary); }
+        .checklist { list-style: none; padding: 0; margin: 12px 0 0 0;}
+        .checklist li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-bottom: 8px;}
+        .checklist input { accent-color: var(--primary);}
+        
+        .meeting-template { background: rgba(0,0,0,0.3); border-left: 3px solid var(--secondary); padding: 16px; border-radius: 0 8px 8px 0; margin-bottom: 16px;}
+        .m-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 8px;}
+        .m-desc { font-size: 12px; color: #cbd5e1; line-height: 1.6;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>经营管家 (店务SOP与排班)</span>
+        </div>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 返回总控台</a>
+    </div>
+
+    <!-- 价值横幅 -->
+    <div class="value-banner" style="background: rgba(0,229,255,0.1); border: 1px solid var(--primary); padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🎯 解决什么经营痛点：<span style="font-weight: 400; color: var(--text-muted);">解决员工做事丢三落四、店庆活动手忙脚乱、晨会不知道开什么内容的问题。</span></div>
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🤝 协同作战：<span style="font-weight: 400; color: var(--text-muted);">将SOP任务一键派发至【员工端模拟】的待办列表，并追踪完成率。</span></div>
+    </div>
+
+    <div class="grid-layout">
+        <div class="glass-card">
+            <div class="section-title">全案活动与日店务 SOP 监控</div>
+            
+            <div class="sop-card" style="border-color: var(--warning);">
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="font-weight: 600; color: #fff; font-size: 14px;">三周年店庆活动全案进度</div>
+                    <div style="font-size: 12px; color: var(--warning);">进行中 (进度 60%)</div>
+                </div>
+                <ul class="checklist">
+                    <li><input type="checkbox" checked disabled> <span>物料海报打印设计 (负责人: 小李)</span></li>
+                    <li><input type="checkbox" checked disabled> <span>私域客户朋友圈预热 (负责人: 芳芳)</span></li>
+                    <li style="color: #fff;"><input type="checkbox"> <span>检查仪器维护与备品 (今天 18:00 前完成)</span></li>
+                </ul>
+                <button class="btn-primary" style="margin-top: 12px; font-size: 12px; padding: 4px 8px; background: transparent; border: 1px solid var(--primary); color: var(--primary);" onclick="remindEmployee(this)">一键催办</button>
+            </div>
+            
+            <div class="sop-card">
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="font-weight: 600; color: #fff; font-size: 14px;">每日早晚班标准交接流程</div>
+                    <div style="font-size: 12px; color: var(--success);">已达标</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="section-title">智能晨夕会大纲自动生成</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">基于昨日真实营收与客诉数据，AI 自动生成今日开会要点。不用老板自己写。</div>
+            
+            <div class="meeting-template">
+                <div class="m-title">🌤️ 今日晨会大纲 (5月10日)</div>
+                <div class="m-desc">
+                    1. 👏 <strong>昨日表扬</strong>：芳芳成功签下一单 3980 年卡，执行了“降维打击”话术。<br>
+                    2. ⚠️ <strong>昨日踩坑</strong>：出现一起敏感肌退款客诉。大家注意，接待新客前必须先做测肤仪！<br>
+                    3. 🎯 <strong>今日重点</strong>：下午 2 点到 4 点有三个空档，店长安排大家在小红书发一波“捡漏”圈。
+                </div>
+            </div>
+            
+            <button class="btn-primary" style="width: 100%;" onclick="sendMeeting(this)">一键发送至企微员工群</button>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        window.remindEmployee = function(btn) {
+            btn.innerHTML = '催办中...';
+            setTimeout(() => {
+                let db = window.lmDB.get();
+                db.tasks.unshift({
+                    id: 't_remind_' + Date.now(),
+                    source: '经营管家',
+                    type: 'employee',
+                    priority: 'high',
+                    title: '紧急催办：检查仪器维护与备品',
+                    goal: '店长提示：请务必在今天18:00前完成',
+                    status: 'pending',
+                    targetRole: '员工'
+                });
+                window.lmDB.save(db);
+                btn.innerHTML = '已催办';
+                btn.style.background = 'var(--success)';
+                btn.style.color = '#fff';
+                btn.disabled = true;
+                showToast('催办指令已送达员工工作台！', 'success');
+            }, 600);
+        };
+
+        window.sendMeeting = function(btn) {
+            btn.innerHTML = '发送中...';
+            setTimeout(() => {
+                let db = window.lmDB.get();
+                db.tasks.unshift({
+                    id: 't_meet_' + Date.now(),
+                    source: '系统群发',
+                    type: 'employee',
+                    priority: 'normal',
+                    title: '📋 今日晨会大纲已下发',
+                    goal: '请全体员工查阅今日接诊重点',
+                    status: 'pending',
+                    targetRole: '员工'
+                });
+                window.lmDB.save(db);
+                btn.innerHTML = '已送达全员群';
+                btn.style.background = 'var(--success)';
+                btn.disabled = true;
+                showToast('晨会大纲已推送至员工端！', 'success');
+            }, 500);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>演示场景 2：客户端模拟 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 400px 1fr; height: calc(100vh - 120px); gap: 32px;}
+        
+        /* 手机壳 */
+        .phone-mockup { width: 375px; height: 812px; background: #fff; border-radius: 40px; border: 12px solid #1e293b; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); display: flex; flex-direction: column;}
+        .phone-notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 150px; height: 30px; background: #1e293b; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; z-index: 10;}
+        .phone-header { background: #f8fafc; padding: 40px 20px 16px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: 600; color: #000; position: relative;}
+        .chat-area { flex: 1; padding: 20px; background: #f1f5f9; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;}
+        .input-area { background: #f8fafc; padding: 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px;}
+        .chat-input { flex: 1; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 24px; outline: none;}
+        .send-btn { background: #10b981; color: #fff; border: none; padding: 0 20px; border-radius: 24px; font-weight: 600; cursor: pointer;}
+        
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; position: relative;}
+        .msg.user { background: #10b981; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px;}
+        .msg.ai { background: #fff; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .msg-time { font-size: 10px; color: #94a3b8; margin-top: 4px; text-align: center; width: 100%;}
+        
+        /* 幕后拆解板 */
+        .behind-scenes { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 16px; padding: 32px; position: relative; overflow: hidden;}
+        .behind-scenes::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);}
+        
+        .magic-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(0,229,255,0.2); padding: 20px; border-radius: 12px; margin-bottom: 24px; position: relative;}
+        .magic-card::before { content: 'AI 幕后动作'; position: absolute; top: -10px; left: 16px; background: var(--bg-dark); color: var(--primary); font-size: 11px; padding: 0 8px; font-weight: 600;}
+        
+        .tag-pill { background: rgba(0,229,255,0.1); color: #00e5ff; border: 1px solid rgba(0,229,255,0.3); padding: 6px 12px; border-radius: 20px; font-size: 13px; display: inline-block; margin: 4px; font-weight: 600;}
+        .tag-pill.danger { background: rgba(255,51,102,0.1); color: #fda4af; border-color: rgba(255,51,102,0.3);}
+        
+        .funnel-step { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; opacity: 0.5; transition: 0.3s;}
+        .funnel-step.active { opacity: 1;}
+        .f-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px;}
+        .funnel-step.active .f-icon { background: var(--primary); color: #000;}
+        
+        .nav-scene { display: block; text-decoration: none; padding: 16px; background: linear-gradient(90deg, #3b82f6, #0099ff); color: #fff; font-weight: 800; border-radius: 8px; text-align: center; margin-top: 40px; transition: 0.3s; box-shadow: 0 4px 20px rgba(59,130,246,0.4); text-transform: uppercase; letter-spacing: 1px;}
+        .nav-scene:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body>
+    <div class="header" style="margin-bottom: 12px;">
+        <div class="page-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>剧情场 2：客户承接战场 (危机爆发)</span>
+        </div>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 回到老板控制台</a>
+    </div>
+    <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 32px;">当前剧情：时间回退到昨晚凌晨 02:15。年卡 VIP 王女士突然发难，看【智能客服】如何死死接住不漏单。</div>
+
+    <div class="grid-layout">
+        <!-- 左侧：客户端模拟手机 -->
+        <div class="phone-mockup">
+            <div class="phone-notch"></div>
+            <div class="phone-header">
+                XX医疗美容中心
+                <div style="font-size: 10px; color: #64748b; font-weight: 400;">AI 接管中 (凌晨免打扰时段)</div>
+            </div>
+            
+            <div class="chat-area" id="chat-container">
+                <div class="msg-time">凌晨 02:15</div>
+                <div class="msg user">你们那个水光针是不是有毒啊！我做完回来这两天脸肿得跟猪头一样，全起红疹子了！</div>
+                <div class="msg user">我要退款！不退我就去 12315 投诉你们！破店害人！</div>
+                
+                <div style="text-align: center; margin: 8px 0;">
+                    <span style="background: rgba(0,0,0,0.05); color: #64748b; font-size: 11px; padding: 4px 12px; border-radius: 12px;">AI 正在分析敏感词汇与情绪...</span>
+                </div>
+                
+                <div class="msg ai" style="border: 2px solid #ef4444; background: #fef2f2;">亲爱的王女士，真的非常非常抱歉让您受惊了。请您先消消气，水光针后的泛红过敏确实让人难受，但这是可逆的，请千万不要用手抓。我已经立刻将您的情况设定为**最高紧急级别**汇报给店长。明早一上班，店长芳芳会第一时间亲自联系您，并为您安排店内的顶级抗敏专家面诊，费用我们全包。今晚请您先用生理盐水敷一下好吗？</div>
+            </div>
+            
+            <!-- 客户还可以继续找茬 -->
+            <div style="padding: 12px; background: #fff; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b;">
+                点击下方按钮，扮演继续发飙的王女士：
+            </div>
+            <div style="padding: 0 12px 12px; display: flex; gap: 8px; flex-wrap: wrap; background: #fff;">
+                <button style="border: 1px solid #ef4444; color: #ef4444; background: #fef2f2; border-radius: 16px; padding: 6px 12px; font-size: 12px; cursor: pointer;" onclick="sendMock('少来这套，我明天就要全额退款！')">继续要求退款</button>
+                <button style="border: 1px solid #3b82f6; color: #3b82f6; background: #eff6ff; border-radius: 16px; padding: 6px 12px; font-size: 12px; cursor: pointer;" onclick="sendMock('那如果明天脸烂了算谁的？')">质疑后果承担</button>
+            </div>
+        </div>
+
+        <!-- 右侧：幕后 AI 分析板 -->
+        <div class="behind-scenes">
+            <h2 style="margin-top: 0; color: #fff; margin-bottom: 8px;">系统到底做了什么？</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 32px; line-height: 1.6;">如果是传统代运营或微商，这单在半夜 2 点无人回复时，就已经变成实打实的 12315 投诉和差评了。但灵谋 AI 在 1 秒内完成了以下操作：</p>
+            
+            <div class="magic-card">
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px;">⚡ 第一步：情绪阻断与策略切换</div>
+                <div style="color: #cbd5e1; font-size: 13px; line-height: 1.6;">
+                    监测到高危词 <span class="tag-pill danger">毁容</span> <span class="tag-pill danger">12315投诉</span> <span class="tag-pill danger">退款</span>。<br>
+                    AI 立即停止了一切“营销卖卡”模式，强行切入**“卑微安抚 + 专家托底”**的公关话术模板。
+                </div>
+            </div>
+            
+            <div class="magic-card">
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px;">⚡ 第二步：隐形自动打标 (资产沉淀)</div>
+                <div style="color: #cbd5e1; font-size: 13px; line-height: 1.6; margin-bottom: 12px;">
+                    此时，无论她在发什么火，AI 都在无情地给她打标签：
+                </div>
+                <div>
+                    <span class="tag-pill">敏感肌发作中</span>
+                    <span class="tag-pill">极度怕毁容</span>
+                    <span class="tag-pill">需要专家权威</span>
+                </div>
+            </div>
+            
+            <div class="magic-card">
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px;">⚡ 第三步：越级警报推送</div>
+                <div style="color: #cbd5e1; font-size: 13px; line-height: 1.6;">
+                    在安抚完毕的瞬间，系统已经把这条工单标红，直接越过了排班表，以“最高优先级”硬塞进了【老板娘总控台】和【店长芳芳待办列表】中。
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px dashed var(--card-border);">
+                <div style="color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 8px;">剧情推进提示：</div>
+                <div style="color: var(--text-muted); font-size: 13px; line-height: 1.6;">
+                    AI 已经在半夜稳住了客户。现在时间来到了第二天早上 9 点。店长芳芳打卡上班，她会看到什么？她又将如何利用 AI 扭转局面，甚至反而让王女士心甘情愿再掏钱？
+                </div>
+            </div>
+
+            <a href="场景演示_员工端模拟.html" class="nav-scene">下一步：进入【员工企微端】化解危机并逼单升卡 →</a>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        function sendMock(text) {
+            let chatArea = document.getElementById('chat-container');
+            chatArea.innerHTML += `<div class="msg user" style="margin-top:16px;">${text}</div>`;
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            setTimeout(() => {
+                chatArea.innerHTML += `<div style="text-align: center; margin: 8px 0;"><span style="background: rgba(0,0,0,0.05); color: #64748b; font-size: 11px; padding: 4px 12px; border-radius: 12px;">AI 正在生成终极安抚底线...</span></div>`;
+                chatArea.scrollTop = chatArea.scrollHeight;
+                
+                setTimeout(() => {
+                    // Remove loading
+                    chatArea.lastElementChild.remove();
+                    chatArea.innerHTML += `<div class="msg ai" style="border: 2px solid #ef4444; background: #fef2f2;">王女士，我向您发誓，如果有任何不可逆的后果，我们店全权负责到底。请您给我一个弥补的机会，店长芳芳已经在等您了。我们先给您退红，绝不推诿责任！</div>`;
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }, 1000);
+            }, 500);
+        }
+    </script>
+</body>
+</html>

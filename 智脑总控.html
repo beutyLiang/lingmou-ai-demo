@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>智脑总控 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 1fr; height: calc(100vh - 150px); gap: 24px;}
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;}
+        .stat-box { background: rgba(0,0,0,0.5); border: 1px solid var(--card-border); padding: 20px; border-radius: 12px; text-align: center;}
+        .stat-val { font-size: 32px; font-weight: 800; color: #fff; margin: 12px 0;}
+        .stat-label { font-size: 14px; color: var(--text-muted);}
+        
+        .health-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 12px;}
+        .health-fill { height: 100%; background: var(--success); width: 100%;}
+        
+        .sys-log { background: rgba(255,255,255,0.02); font-family: monospace; padding: 16px; border-radius: 8px; font-size: 12px; color: #cbd5e1; height: 200px; overflow-y: auto;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <span>智脑总控 (全盘系统健康度与算力)</span>
+        </div>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 返回总控台</a>
+    </div>
+
+    <!-- 价值横幅 -->
+    <div class="value-banner" style="background: rgba(179,0,255,0.1); border: 1px solid var(--secondary); padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🎯 解决什么经营痛点：<span style="font-weight: 400; color: var(--text-muted);">不是极客工具，而是算力账本。让老板清清楚楚看到系统每天在后台跑了多少数据，挽回了多少损失。</span></div>
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🤝 协同作战：<span style="font-weight: 400; color: var(--text-muted);">为其他 9 大模块提供底层算力分配与数据安全隔离。</span></div>
+    </div>
+
+    <div class="grid-layout">
+        <div class="glass-card">
+            <div class="section-title">全域系统健康度与价值核算</div>
+            
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-label">AI 纠偏与拦截次数</div>
+                    <div class="stat-val" style="color: var(--warning);">14 次</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">本月累计拦截高危客诉</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">预估挽回损失金额</div>
+                    <div class="stat-val" style="color: var(--success);">¥ 24,500</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">基于客单价计算</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">自动产生数据标签</div>
+                    <div class="stat-val">3,241</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">无形中积累的门店资产</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">系统算力分配健康度</div>
+                    <div class="stat-val" style="font-size: 24px; margin: 16px 0;">99.9% 优</div>
+                    <div class="health-bar"><div class="health-fill"></div></div>
+                </div>
+            </div>
+            
+            <div class="section-title">底层流转日志 (脱敏核查)</div>
+            <div class="sys-log">
+                [10:24:01] 引擎触发：销售顾问模块成功调用【标签库】，提取 <新客咨询> 标签<br>
+                [11:05:32] 安全拦截：员工端检测到向外部客户发送 <包治百病> 违禁词，已自动阻断并上报<br>
+                [12:10:00] 算力调度：获客引流官模块占用 12% 算力分析同城流量<br>
+                [13:00:00] 资产备份：客户资产库已完成第 341 次自动云端加密备份
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+</body>
+</html>

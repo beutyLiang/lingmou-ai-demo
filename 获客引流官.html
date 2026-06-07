@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>获客引流官 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 1fr 350px; height: calc(100vh - 150px); gap: 24px;}
+        .radar-box { background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); border-radius: 12px; height: 300px; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; margin-bottom: 24px;}
+        .radar-circle { position: absolute; border-radius: 50%; border: 1px solid rgba(0,229,255,0.2); }
+        .radar-sweep { position: absolute; width: 50%; height: 50%; background: linear-gradient(45deg, rgba(0,229,255,0.5), transparent); transform-origin: bottom right; animation: sweep 4s infinite linear;}
+        @keyframes sweep { to { transform: rotate(360deg); } }
+        
+        .opp-card { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; border-left: 3px solid var(--primary); margin-bottom: 12px; transition: 0.2s; display: flex; justify-content: space-between; align-items: center;}
+        .opp-card:hover { background: rgba(0,229,255,0.1); }
+        .opp-tag { font-size: 11px; padding: 2px 6px; background: rgba(255,255,255,0.1); border-radius: 4px;}
+        
+        .plan-box { background: rgba(0,0,0,0.5); border: 1px solid var(--card-border); padding: 20px; border-radius: 12px;}
+        .plan-step { display: flex; gap: 12px; margin-bottom: 16px;}
+        .step-num { width: 24px; height: 24px; background: var(--primary); color: #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 600; font-size: 12px; flex-shrink: 0;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            <span>获客引流官 (同城流量雷达)</span>
+        </div>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 返回总控台</a>
+    </div>
+
+    <!-- 价值横幅 -->
+    <div class="value-banner" style="background: rgba(0,229,255,0.1); border: 1px solid var(--primary); padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🎯 解决什么经营痛点：<span style="font-weight: 400; color: var(--text-muted);">解决门店拓客难、不知道发什么内容能火的问题。实时监控同城 5 公里流量风向。</span></div>
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🤝 协同作战：<span style="font-weight: 400; color: var(--text-muted);">锁定机会后，一键将方案输送给【内容策划官】生成素材。</span></div>
+    </div>
+
+    <div class="grid-layout">
+        <div class="glass-card" style="overflow-y: auto;">
+            <div class="section-title">同城 5 公里商圈热点雷达</div>
+            <div class="radar-box">
+                <div class="radar-circle" style="width: 280px; height: 280px;"></div>
+                <div class="radar-circle" style="width: 180px; height: 180px;"></div>
+                <div class="radar-circle" style="width: 80px; height: 80px;"></div>
+                <div class="radar-sweep"></div>
+                <div style="position: absolute; width: 10px; height: 10px; background: var(--warning); border-radius: 50%; top: 30%; left: 60%; box-shadow: 0 0 10px var(--warning);"></div>
+                <div style="position: absolute; width: 8px; height: 8px; background: var(--success); border-radius: 50%; top: 60%; left: 30%; box-shadow: 0 0 10px var(--success);"></div>
+            </div>
+            
+            <div class="section-title">今日捕捉到的拓客机会</div>
+            <div class="opp-card" style="border-color: var(--warning);">
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px;">#入夏美白大作战# (同城热搜爆点)</div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <span class="opp-tag">热度飙升 400%</span><span class="opp-tag">对标门店都在发</span>
+                    </div>
+                </div>
+                <button class="btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="loadPlan('meibai')">生成全案</button>
+            </div>
+            
+            <div class="opp-card">
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px;">职场肩颈舒缓周末局</div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <span class="opp-tag">周边写字楼需求</span><span class="opp-tag">利润率高</span>
+                    </div>
+                </div>
+                <button class="btn-primary" style="padding: 6px 12px; font-size: 12px; background: transparent; border: 1px solid var(--primary); color: var(--primary);" onclick="loadPlan('jianjing')">生成全案</button>
+            </div>
+            
+            <!-- 账号定位建议卡 -->
+            <div style="margin-top: 32px; background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px;">
+                <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">💡 AI 账号定位诊断</div>
+                <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                    基于您的历史数据，当前账号在“老板娘创业人设”上转化率最高（12%）。建议不要发纯产品推销，继续采用“专业拆解+真人出镜”模式。
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="section-title">AI 引流作战全案</div>
+            <div id="plan-container" class="plan-box" style="height: 90%; overflow-y: auto;">
+                <div style="text-align: center; color: var(--text-muted); margin-top: 100px; font-size: 13px;">请在左侧点击【生成全案】分析热点机会。</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        window.loadPlan = function(type) {
+            let container = document.getElementById('plan-container');
+            container.innerHTML = `<div style="text-align:center; color:var(--primary); margin-top: 100px;">AI 正在分析同城数据并生成落地方案...</div>`;
+            
+            setTimeout(() => {
+                let html = `
+                    <h3 style="margin-top: 0; color: var(--warning);">入夏美白大作战 - 引流全案</h3>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 24px;">预计投入：¥500 (DOU+) | 预计到店：15-20 人</div>
+                    
+                    <div class="plan-step">
+                        <div class="step-num">1</div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: #fff;">公域钩子 (小红书/抖音)</div>
+                            <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">发布“如何判断自己是不是隐性黑皮”测试视频，挂载 19.9 元肌底检测单。</div>
+                        </div>
+                    </div>
+                    
+                    <div class="plan-step">
+                        <div class="step-num">2</div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: #fff;">私域承接 (企微)</div>
+                            <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">客户添加后，自动发送防晒避坑指南 PDF，并建立标签。</div>
+                        </div>
+                    </div>
+                    
+                    <div class="plan-step">
+                        <div class="step-num">3</div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: #fff;">到店升单</div>
+                            <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">检后利用机器数据，主推 398 元光子嫩肤套餐。</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 24px; padding: 12px; background: rgba(0,229,255,0.1); border-radius: 8px;">
+                        <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">👉 对标同城优秀案例</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">
+                            1. 【XX皮肤管理中心】点赞 2.1w：晒黑后的急救方法<br>
+                            2. 【YY美学】点赞 1.5w：这些防晒习惯其实没用
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary" style="width: 100%; margin-top: 24px;" onclick="sendToContent()">将方案输送给【内容策划官】写脚本</button>
+                `;
+                container.innerHTML = html;
+            }, 800);
+        };
+        
+        window.sendToContent = function(btn) {
+            if(btn) btn.classList.add('btn-loading');
+            setTimeout(() => {
+                // 写入真实数据
+                window.lmDB.addContentScript('本周日', '图文全案', '入夏美白大作战 (预估15-20人到店)', '待写脚本', '#f59e0b');
+                if(btn) {
+                    btn.classList.remove('btn-loading');
+                    btn.innerText = '已送达排期';
+                    btn.style.background = 'var(--success)';
+                    btn.disabled = true;
+                }
+                showToast('已推送到内容策划官排期表！', 'success');
+            }, 600);
+        };
+    </script>
+</body>
+</html>

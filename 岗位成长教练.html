@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>岗位成长教练 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 1fr 1fr; height: calc(100vh - 150px); gap: 24px;}
+        .radar-box { background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); border-radius: 12px; height: 300px; display: flex; justify-content: center; align-items: center; position: relative;}
+        
+        .prog-card { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 16px; border-radius: 8px; margin-bottom: 12px;}
+        .bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 8px; overflow: hidden;}
+        .bar-fill { height: 100%; background: var(--primary); width: 0%;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span>岗位成长教练 (能力雷达与晋升)</span>
+        </div>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 返回总控台</a>
+    </div>
+
+    <!-- 价值横幅 -->
+    <div class="value-banner" style="background: rgba(0,229,255,0.1); border: 1px solid var(--primary); padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🎯 解决什么经营痛点：<span style="font-weight: 400; color: var(--text-muted);">解决员工晋升靠拍脑门、画大饼导致员工流失的问题。提供可视化的能力雷达图和透明的晋升天梯。</span></div>
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🤝 协同作战：<span style="font-weight: 400; color: var(--text-muted);">整合【员工教练】的测试成绩与【销售顾问】的成单数据，自动算出能力分数。</span></div>
+    </div>
+
+    <div class="grid-layout">
+        <div class="glass-card">
+            <div class="section-title">芳芳的个人能力雷达地图</div>
+            
+            <div class="radar-box">
+                <!-- 简单模拟个雷达图结构 -->
+                <svg width="200" height="200" viewBox="0 0 100 100">
+                    <polygon points="50,5 95,30 80,85 20,85 5,30" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                    <polygon points="50,25 75,40 65,70 35,70 25,40" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                    <polygon points="50,15 85,35 70,80 30,70 15,35" fill="rgba(0,229,255,0.3)" stroke="var(--primary)" stroke-width="2"/>
+                    <text x="50" y="5" font-size="4" fill="#fff" text-anchor="middle">销售转化</text>
+                    <text x="95" y="30" font-size="4" fill="#fff">客情维护</text>
+                    <text x="80" y="85" font-size="4" fill="#fff">仪器实操</text>
+                    <text x="20" y="85" font-size="4" fill="#fff" text-anchor="end">专业知识</text>
+                    <text x="5" y="30" font-size="4" fill="#fff" text-anchor="end">危机处理</text>
+                </svg>
+            </div>
+            
+            <div style="margin-top: 16px; font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+                <span style="color: var(--primary);">优势项</span>：销售转化极强，业绩稳定。<br>
+                <span style="color: var(--warning);">短板项</span>：危机处理较弱，遇到客诉容易慌乱。<br>
+                <span style="color: #fff;">AI 建议</span>：已为您下周排期了 3 节《客诉模拟对练舱》。
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="section-title">职级晋升天梯进度</div>
+            
+            <div class="prog-card">
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="font-weight: 600; font-size: 14px; color: #fff;">向“高级美容顾问”冲刺</div>
+                    <div style="font-size: 12px; color: var(--primary);">综合进度 85%</div>
+                </div>
+                
+                <div style="margin-top: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);">
+                        <span>本月业绩达标 (30k/50k)</span>
+                        <span>60%</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 60%;"></div></div>
+                </div>
+                
+                <div style="margin-top: 12px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);">
+                        <span>专业知识考核 (已通关)</span>
+                        <span style="color: var(--success);">100%</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 100%; background: var(--success);"></div></div>
+                </div>
+            </div>
+            
+            <button class="btn-primary" style="width: 100%; margin-top: 16px;" onclick="viewPromotion(this)">申请解锁高级权限</button>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        window.viewPromotion = function(btn) {
+            btn.innerHTML = '正在提交申请...';
+            setTimeout(() => {
+                let db = window.lmDB.get();
+                db.tasks.unshift({
+                    id: 't_promo_' + Date.now(),
+                    source: '岗位晋升',
+                    type: 'boss',
+                    priority: 'normal',
+                    title: '芳芳已通过高级考核，申请权限升级',
+                    goal: '请老板查阅并一键授权解锁新的项目操作权限',
+                    status: 'pending',
+                    targetRole: '老板'
+                });
+                window.lmDB.save(db);
+                btn.innerHTML = '已发送晋升申请给老板';
+                btn.style.background = 'var(--success)';
+                btn.disabled = true;
+                showToast('申请已推送到总控台待办区！', 'success');
+            }, 600);
+        };
+    </script>
+</body>
+</html>

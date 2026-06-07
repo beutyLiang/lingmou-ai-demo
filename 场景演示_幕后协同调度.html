@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>演示场景 4：幕后业务大盘协同调度 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 1fr; height: calc(100vh - 120px); gap: 24px; position: relative;}
+        
+        .receipt-card { background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,51,102,0.1)); border: 2px solid rgba(255,215,0,0.5); border-radius: 24px; padding: 40px; text-align: center; max-width: 800px; margin: 40px auto 0; position: relative; box-shadow: 0 20px 50px rgba(255,215,0,0.1);}
+        .receipt-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 8px;}
+        .receipt-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 32px;}
+        
+        .number-huge { font-size: 64px; font-weight: 800; background: linear-gradient(90deg, #ffd700, #ff8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 20px 0; text-shadow: 0 4px 20px rgba(255,215,0,0.2);}
+        
+        .breakdown { display: flex; justify-content: center; gap: 40px; margin-top: 32px;}
+        .bd-item { text-align: left; background: rgba(0,0,0,0.4); padding: 16px 24px; border-radius: 12px; border: 1px solid var(--card-border);}
+        .bd-label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px;}
+        .bd-value { font-size: 20px; font-weight: 800; color: #fff;}
+        .bd-value.success { color: var(--success);}
+        .bd-value.warning { color: #ffd700;}
+        
+        .cogs-section { display: flex; justify-content: center; gap: 12px; margin-top: 40px;}
+        .cog { background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); padding: 8px 16px; border-radius: 20px; font-size: 12px; color: var(--text-muted);}
+        .cog span { color: var(--primary); font-weight: 600;}
+        
+        .back-home { display: inline-block; text-decoration: none; padding: 16px 40px; background: #fff; color: #000; font-weight: 800; border-radius: 30px; margin-top: 40px; transition: 0.3s;}
+        .back-home:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(255,255,255,0.2);}
+    </style>
+</head>
+<body>
+    <div class="header" style="margin-bottom: 0;">
+        <div class="page-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <span>剧情场 4：经营结果生成器 (幕后清算)</span>
+        </div>
+        <a href="场景演示_员工端模拟.html" class="back-btn">← 回到员工端</a>
+    </div>
+
+    <div class="grid-layout">
+        <div class="receipt-card">
+            <div class="receipt-title">本次战役价值结算单</div>
+            <div class="receipt-subtitle">您刚刚亲历的 10 分钟内，灵谋 AI 底层运转了 142 次计算，最终为您：</div>
+            
+            <div style="font-size: 16px; color: #fff; font-weight: 600;">成功守住了</div>
+            <div class="number-huge">¥ 21,780</div>
+            
+            <div class="breakdown">
+                <div class="bd-item">
+                    <div class="bd-label">挽回 VIP 退款流失</div>
+                    <div class="bd-value warning">+ ¥ 19,800</div>
+                </div>
+                <div class="bd-item">
+                    <div class="bd-label">顺势促成升卡利润</div>
+                    <div class="bd-value success">+ ¥ 1,980</div>
+                </div>
+                <div class="bd-item">
+                    <div class="bd-label">沉淀客户隐形资产</div>
+                    <div class="bd-value">+ 4 个精准标签</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; font-size: 13px; color: var(--text-muted);">
+                如果刚才不是系统拦截，而是靠那个“危机处理短板”的员工小张去回复。<br>
+                今天这家店，不仅会丢掉这 21780 块钱，还会喜提一次 12315 投诉。
+            </div>
+            
+            <div class="cogs-section">
+                <div class="cog">参与模块一：<span>智能客服</span> (夜间稳局)</div>
+                <div class="cog">参与模块二：<span>智脑总控</span> (越级报警)</div>
+                <div class="cog">参与模块三：<span>销售顾问</span> (降维话术)</div>
+                <div class="cog">参与模块四：<span>岗位教练</span> (员工闭环)</div>
+            </div>
+            
+            <a href="场景演示_老板端总控.html" class="back-home" onclick="lmDB.reset()">看完戏了，清空数据，重新回到【今日指挥台】 →</a>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+</body>
+</html>

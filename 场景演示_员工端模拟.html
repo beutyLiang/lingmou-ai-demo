@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>演示场景 3：员工企微工作台模拟 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 350px 1fr; height: calc(100vh - 120px); gap: 32px;}
+        
+        /* 企微左侧列表 */
+        .qw-sidebar { background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden;}
+        .qw-header { background: #1e293b; color: #fff; padding: 16px; font-weight: 600;}
+        .task-item { padding: 16px; border-bottom: 1px solid #e2e8f0; background: #fff; border-left: 4px solid transparent; cursor: pointer; transition: 0.2s;}
+        .task-item:hover { background: #f1f5f9;}
+        .task-item.active { border-left-color: var(--warning); background: #fef2f2;}
+        .task-item.active .t-title { color: #ef4444;}
+        
+        /* 企微右侧作战台 */
+        .qw-main { background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; position: relative;}
+        .qw-top { background: #f8fafc; padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: flex-start;}
+        .qw-body { flex: 1; padding: 24px; background: #f1f5f9; display: flex; flex-direction: column; gap: 20px; overflow-y: auto;}
+        
+        .ai-assist-box { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 4px solid var(--primary);}
+        .ai-assist-box.danger { border-top-color: var(--warning);}
+        
+        .reply-card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; margin-top: 12px; position: relative;}
+        .reply-card::before { content: '降维打击话术'; position: absolute; top: -10px; left: 16px; background: var(--warning); color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600;}
+        
+        .tag-pill { background: rgba(0,229,255,0.1); color: #0099ff; border: 1px solid rgba(0,229,255,0.3); padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; margin-right: 4px; font-weight: 600;}
+        .tag-pill.danger { background: rgba(255,51,102,0.1); color: #ef4444; border-color: rgba(255,51,102,0.3);}
+        
+        .nav-scene { display: block; text-decoration: none; padding: 16px; background: linear-gradient(90deg, var(--success), #059669); color: #fff; font-weight: 800; border-radius: 8px; text-align: center; margin-top: auto; transition: 0.3s; box-shadow: 0 4px 20px rgba(16,185,129,0.4); text-transform: uppercase; letter-spacing: 1px;}
+        .nav-scene:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body>
+    <div class="header" style="margin-bottom: 12px;">
+        <div class="page-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>剧情场 3：员工战力放大器 (化解与逼单)</span>
+        </div>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 回到老板控制台</a>
+    </div>
+    <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 32px;">当前剧情：第二天早上 9:00。店长芳芳打开企业微信工作台，系统已经把危机拆解好，喂到了她嘴边。她不需要靠个人悟性，只需“无脑”执行。</div>
+
+    <div class="grid-layout">
+        <!-- 左侧：员工待办 -->
+        <div class="qw-sidebar">
+            <div class="qw-header">芳芳的今日打仗清单</div>
+            <div style="background: rgba(239,68,68,0.1); color: #ef4444; font-size: 12px; padding: 8px 16px; font-weight: 600;">⚠️ 1 条极高优危机待处理</div>
+            
+            <div class="task-item active">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <span class="t-title" style="font-weight: 600; font-size: 14px;">[置顶] 退款危机安抚接管</span>
+                    <span style="font-size: 12px; color: #ef4444;">刚刚</span>
+                </div>
+                <div style="font-size: 12px; color: #64748b;">来源：智能客服半夜拦截</div>
+            </div>
+            
+            <div class="task-item">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <span style="font-weight: 600; font-size: 14px; color: #1e293b;">[常规] 检查仪器维护与备品</span>
+                    <span style="font-size: 12px; color: #94a3b8;">今天 18:00 前</span>
+                </div>
+                <div style="font-size: 12px; color: #64748b;">来源：老板娘总控台下发</div>
+            </div>
+            
+            <div class="task-item" style="opacity: 0.6;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <span style="font-weight: 600; font-size: 14px; color: #1e293b;">[学习] 必修对练舱</span>
+                    <span style="font-size: 12px; color: #10b981;">已完成</span>
+                </div>
+                <div style="font-size: 12px; color: #64748b;">《客诉情景模拟与降维打击法》</div>
+            </div>
+        </div>
+
+        <!-- 右侧：AI 辅助处理区 -->
+        <div class="qw-main">
+            <div class="qw-top">
+                <div>
+                    <div style="font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 8px;">客户档案：王女士 (年卡VIP)</div>
+                    <div>
+                        <span class="tag-pill danger">重度过敏</span>
+                        <span class="tag-pill danger">极度怕毁容</span>
+                        <span class="tag-pill">需专家权威</span>
+                        <span class="tag-pill">价格敏感</span>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 12px; color: #64748b; margin-bottom: 4px;">预计挽回流失</div>
+                    <div style="font-size: 20px; font-weight: 800; color: #ef4444;">¥ 19,800</div>
+                </div>
+            </div>
+            
+            <div class="qw-body">
+                <div class="ai-assist-box danger">
+                    <h3 style="margin-top: 0; color: #1e293b; margin-bottom: 12px;">🚨 AI 已为您复盘昨夜战况</h3>
+                    <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; font-size: 13px; color: #475569; line-height: 1.6; border-left: 3px solid #cbd5e1; margin-bottom: 16px;">
+                        昨晚 02:15，王女士因水光针后泛红爆发剧烈情绪，扬言 12315 投诉。系统已强行稳住对方，并承诺今天由您（专家）亲自面诊修复。
+                    </div>
+                    
+                    <h3 style="color: #1e293b; margin-bottom: 8px; font-size: 14px;">🧠 销售顾问模块：提供破冰与反杀策略</h3>
+                    <div style="font-size: 13px; color: #64748b; margin-bottom: 12px;">
+                        基于客户【极度怕毁容】且【需要权威】的标签，请严格遵循以下降维打击话术。
+                    </div>
+                    
+                    <div class="reply-card">
+                        <div style="font-size: 14px; color: #1e293b; line-height: 1.6; margin-bottom: 16px; font-weight: 600;">
+                            “王姐，我是店长芳芳，我都听说了。我已经把那个给您操作的技师严厉批评了！您现在什么都别管，立刻打车来店里，我亲自给您上店里最贵的冰点修复仪器，费用全免。别拖了，女人的脸比什么都重要！”
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="font-size: 12px; color: #ef4444;">AI 分析：她吃“严厉权威”和“免责占便宜”这一套，一定能叫到店。</div>
+                            <button style="background: var(--warning); color: #fff; border: none; padding: 8px 24px; border-radius: 4px; font-weight: 600; cursor: pointer;" onclick="executeStrategy(this)">一键发送企微</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 隐藏的进阶动作 (点击发送后显示) -->
+                <div id="next-step" style="display: none; transition: 0.5s;">
+                    <div style="text-align: center; color: var(--success); font-weight: 600; margin-bottom: 24px; font-size: 14px;">✅ 客户已成功被邀约到店！危机解除 80%。</div>
+                    
+                    <div class="ai-assist-box" style="border-top-color: var(--success);">
+                        <h3 style="margin-top: 0; color: #1e293b; margin-bottom: 8px;">💰 进阶策略：危机转化为升卡利润</h3>
+                        <div style="font-size: 13px; color: #64748b; margin-bottom: 12px;">
+                            客户到店退红后，情绪将进入“感恩与补偿”心理期。系统建议利用此心理落差进行升单。
+                        </div>
+                        <div style="background: rgba(16,185,129,0.1); padding: 12px; border-radius: 8px; font-size: 13px; color: #065f46; font-weight: 600; border: 1px solid rgba(16,185,129,0.3); margin-bottom: 16px;">
+                            话术引导：“王姐你看，退完红是不是反而比之前更白嫩了？其实你就是底子好但吸收差。今天算我给你赔罪，原价 3980 的敏肌维稳胶原套，我向老板娘申请，骨折价 1980 给你拿一套回去稳固一下！”
+                        </div>
+                        <button style="background: var(--success); color: #fff; border: none; padding: 10px 0; width: 100%; border-radius: 4px; font-weight: 600; cursor: pointer;" onclick="closeDeal(this)">标记：已成功升单 ¥1980，工单闭环</button>
+                    </div>
+                </div>
+                
+                <a href="场景演示_幕后协同调度.html" id="final-nav" class="nav-scene" style="display: none;">最终步：去【幕后协同页】看这场仗怎么变成真金白银 →</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        function executeStrategy(btn) {
+            btn.innerText = '已发送，客户已接收';
+            btn.style.background = '#cbd5e1';
+            btn.disabled = true;
+            showToast('破冰成功！客户同意 1 小时后到店', 'success');
+            
+            setTimeout(() => {
+                document.getElementById('next-step').style.display = 'block';
+            }, 1000);
+        }
+        
+        function closeDeal(btn) {
+            btn.innerText = '工单已圆满闭环，业绩已录入';
+            btn.style.background = '#cbd5e1';
+            btn.disabled = true;
+            showToast('恭喜！不仅挽回了 2万元退款，还额外增收 1980元！', 'success');
+            
+            // 写入本地数据库，改变总控台状态
+            let db = lmDB.get();
+            db.stats.estimatedRevenue += 1980; // 假装备注一下营收
+            window.lmDB.save(db);
+            
+            setTimeout(() => {
+                document.getElementById('final-nav').style.display = 'block';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

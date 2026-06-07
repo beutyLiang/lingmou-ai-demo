@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>入行导师 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 1fr 1fr; height: calc(100vh - 150px); gap: 24px;}
+        .guide-card { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 16px; border-radius: 8px; margin-bottom: 16px; cursor: pointer; transition: 0.2s;}
+        .guide-card:hover { border-color: var(--primary); background: rgba(0,229,255,0.05); }
+        .g-icon { font-size: 24px; margin-bottom: 8px;}
+        
+        .pitfall-box { background: rgba(255,51,102,0.1); border-left: 3px solid var(--warning); padding: 16px; border-radius: 0 8px 8px 0; margin-bottom: 16px;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span>入行导师 (新手扫盲与避坑指南)</span>
+        </div>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 返回总控台</a>
+    </div>
+
+    <!-- 价值横幅 -->
+    <div class="value-banner" style="background: rgba(0,229,255,0.1); border: 1px solid var(--primary); padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🎯 解决什么经营痛点：<span style="font-weight: 400; color: var(--text-muted);">解决美业小白跨行开店容易踩坑交学费的问题。从选址、仪器采购到办证，提供保姆级指引。</span></div>
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🤝 协同作战：<span style="font-weight: 400; color: var(--text-muted);">门店开业后，自动将权限移交给【经营管家】进行日常运转。</span></div>
+    </div>
+
+    <div class="grid-layout">
+        <div class="glass-card" style="overflow-y: auto;">
+            <div class="section-title">美业新店 30 天速通手册</div>
+            <div class="guide-card">
+                <div class="g-icon">🗺️</div>
+                <div style="font-weight: 600; font-size: 14px; color: #fff;">第 1 阶段：选址与商圈分析</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">如何看懂同城流量捕获率，避开二手房东陷阱。</div>
+            </div>
+            <div class="guide-card">
+                <div class="g-icon">⚙️</div>
+                <div style="font-weight: 600; font-size: 14px; color: #fff;">第 2 阶段：仪器采购防坑防伪</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">超声炮、热玛吉水件辨伪速成，严防被耗材商套路。</div>
+            </div>
+            <div class="guide-card" style="border-color: var(--primary);">
+                <div class="g-icon">📋</div>
+                <div style="font-weight: 600; font-size: 14px; color: #fff;">第 3 阶段：工商办证与合规要求</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">生活美容与医疗美容的法律界限，消防过审重点。</div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="section-title">今日高危避坑建议</div>
+            <div class="pitfall-box">
+                <div style="font-weight: 600; font-size: 14px; color: #fff; margin-bottom: 8px;">⚠️ 预警：切勿使用“医疗级”、“永久”等违禁词宣传</div>
+                <div style="font-size: 12px; color: #cbd5e1; line-height: 1.6;">近期市场监管局严查生活美容院违规宣传。您的账号在小红书的最新一篇草稿中出现了“医疗级无痛”字眼，已被 AI 自动拦截。</div>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px;">
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 8px;">行业人脉连接器</div>
+                <div style="font-size: 12px; color: var(--text-muted);">正在为您匹配同城靠谱的装修团队与仪器供应商...</div>
+                <button class="btn-primary" style="margin-top: 12px; width: 100%;" onclick="viewContacts(this)">一键添加到企微通讯录</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        window.viewContacts = function(btn) {
+            btn.innerHTML = '正在同步数据...';
+            setTimeout(() => {
+                btn.innerHTML = '已导入企微通讯录';
+                btn.style.background = 'var(--success)';
+                btn.disabled = true;
+                showToast('3名同城优质供应商已添加至您的企业微信。', 'success');
+            }, 600);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>销售顾问 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 300px 1fr; height: calc(100vh - 150px); gap: 24px;}
+        .tier-card { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 12px; border-radius: 8px; margin-bottom: 12px; cursor: pointer; transition: 0.2s;}
+        .tier-card:hover { border-color: var(--primary); background: rgba(0,229,255,0.05); }
+        
+        .chat-ui { background: #fff; border-radius: 12px; display: flex; flex-direction: column; height: 100%; overflow: hidden;}
+        .chat-head { background: #f8fafc; padding: 16px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-weight: 600; display: flex; justify-content: space-between; align-items: center;}
+        .chat-body { flex: 1; padding: 16px; background: #f1f5f9; display: flex; flex-direction: column; gap: 16px; overflow-y: auto;}
+        
+        /* 悬浮金牌建议卡 */
+        .ai-assist-panel { background: #fff; border-top: 1px solid #e2e8f0; padding: 16px; border-radius: 0 0 12px 12px;}
+        .objection-btn { font-size: 12px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 16px; background: #f8fafc; color: #475569; cursor: pointer;}
+        .objection-btn:hover { border-color: var(--primary); color: var(--primary);}
+        
+        .reply-option { border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;}
+        .reply-option:hover { border-color: var(--primary); background: #f0fdf4;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="page-title">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>销售顾问 (金牌销讲辅助与客户档案)</span>
+        </div>
+        <a href="场景演示_员工端模拟.html" class="back-btn">← 返回员工企微端</a>
+    </div>
+
+    <!-- 价值横幅 -->
+    <div class="value-banner" style="background: rgba(16,185,129,0.1); border: 1px solid var(--success); padding: 12px 20px; border-radius: 8px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🎯 解决什么经营痛点：<span style="font-weight: 400; color: var(--text-muted);">解决员工不会说话、抓不住客户痛点、逼单总是跑单的难题。让每个新员工都拥有金牌销冠的应答大脑。</span></div>
+        <div style="font-size: 14px; font-weight: 600; color: #fff;">🤝 协同作战：<span style="font-weight: 400; color: var(--text-muted);">直接调用【智能客服】沉淀的标签资产，辅助员工完成企微端的最终成单。</span></div>
+    </div>
+
+    <div class="grid-layout">
+        <!-- 左侧档案与分层 -->
+        <div class="glass-card" style="overflow-y: auto;">
+            <div class="section-title">智能客户分层 (AI 自动打标)</div>
+            
+            <div class="tier-card" style="border-left: 3px solid var(--warning);">
+                <div style="font-weight: 600; font-size: 14px; color: #fff;">A 类高潜：王女士 (需立即逼单)</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">标签：价格敏感 / 怕排队 / 敏感肌</div>
+            </div>
+            <div class="tier-card">
+                <div style="font-weight: 600; font-size: 14px; color: #fff;">沉睡唤醒：李女士</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">标签：2个月未到店 / 年卡VIP</div>
+            </div>
+            
+            <div class="section-title" style="margin-top: 32px;">成单复盘分析台</div>
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; font-size: 12px;">
+                <div style="color: var(--success); margin-bottom: 8px;">🏆 昨天张女士为什么成交了？</div>
+                <div style="color: var(--text-muted);">复盘：命中核心诉求“带娃没时间”，主推了“40分钟快速补水”套餐成功。</div>
+            </div>
+        </div>
+
+        <!-- 右侧作战台 -->
+        <div class="chat-ui">
+            <div class="chat-head">
+                <div>企微对话：王女士</div>
+                <div style="font-size: 12px; font-weight: 400; color: #64748b;">AI 已接管辅助...</div>
+            </div>
+            <div class="chat-body">
+                <div style="text-align: right;"><span style="background: #10b981; color: #fff; padding: 8px 12px; border-radius: 8px; display: inline-block;">王姐，刚才给您看的光子嫩肤套餐，您看下班后过来体验一下吗？不用排队。</span></div>
+                <div style="text-align: left; margin-top: 12px;"><span style="background: #fff; color: #000; padding: 8px 12px; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">我觉得还是太贵了，而且我怕做完脸红没法上班，我再想想吧。</span></div>
+            </div>
+            
+            <div class="ai-assist-panel">
+                <div style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 8px;">💡 AI 异议处理锦囊 (基于她的敏感肌标签)</div>
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <button class="objection-btn">嫌太贵</button>
+                    <button class="objection-btn">怕敏感泛红</button>
+                    <button class="objection-btn">想拖延</button>
+                </div>
+                
+                <div class="reply-option">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 600; color: #1e293b;">【保单策略】降维打击法</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">“王姐，理解您的担忧。既然怕红，我们不急着做光子。我向店长申请了给您免费做个【冰点舒缓检测】，只用15分钟，不收钱，您先看看仪器适不适合您的皮肤好吗？”</div>
+                    </div>
+                    <button style="background: var(--primary); color: #000; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px;" onclick="sendObjection(this)">一键发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        window.sendObjection = function(btn) {
+            btn.innerHTML = '发送中...';
+            setTimeout(() => {
+                let msg = "王姐，理解您的担忧。既然怕红，我们不急着做光子。我向店长申请了给您免费做个【冰点舒缓检测】，只用15分钟，不收钱，您先看看仪器适不适合您的皮肤好吗？";
+                // 将话术写回全局数据库
+                window.lmDB.addChat('ai', msg, { action: 'objection_handling' });
+                
+                // 页面局部展示
+                let chatBody = document.querySelector('.chat-body');
+                chatBody.innerHTML += `<div style="text-align: right; margin-top: 12px;"><span style="background: #10b981; color: #fff; padding: 8px 12px; border-radius: 8px; display: inline-block;">${msg}</span></div>`;
+                chatBody.scrollTop = chatBody.scrollHeight;
+                
+                btn.innerHTML = '已发送';
+                btn.style.background = '#e2e8f0';
+                btn.style.color = '#94a3b8';
+                btn.disabled = true;
+                showToast('已发送至客户端，并记录到全局日志', 'success');
+            }, 500);
+        };
+    </script>
+</body>
+</html>
