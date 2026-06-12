@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>演示场景 2：客户端模拟 - 灵谋AI</title>
+    <title>客户端视图 - 灵谋AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="common.css">
     <style>
@@ -45,11 +45,11 @@
     <div class="header" style="margin-bottom: 12px;">
         <div class="page-title">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span>剧情场 2：客户承接战场 (危机爆发)</span>
+            <span>客户互动监控视图</span>
         </div>
-        <a href="场景演示_老板端总控.html" class="back-btn">← 回到老板控制台</a>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 回到总控台</a>
     </div>
-    <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 32px;">当前剧情：时间回退到昨晚凌晨 02:15。年卡 VIP 王女士突然发难，看【智能客服】如何死死接住不漏单。</div>
+    <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 32px;">当前状态：深夜静默接管模式中</div>
 
     <div class="grid-layout">
         <!-- 左侧：客户端模拟手机 -->
@@ -74,21 +74,21 @@
             
             <!-- 客户还可以继续找茬 -->
             <div style="padding: 12px; background: #fff; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b;">
-                点击下方按钮，扮演继续发飙的王女士：
+                快捷工单测试指令：
             </div>
             <div style="padding: 0 12px 12px; display: flex; gap: 8px; flex-wrap: wrap; background: #fff;">
-                <button style="border: 1px solid #ef4444; color: #ef4444; background: #fef2f2; border-radius: 16px; padding: 6px 12px; font-size: 12px; cursor: pointer;" onclick="sendMock('少来这套，我明天就要全额退款！')">继续要求退款</button>
-                <button style="border: 1px solid #3b82f6; color: #3b82f6; background: #eff6ff; border-radius: 16px; padding: 6px 12px; font-size: 12px; cursor: pointer;" onclick="sendMock('那如果明天脸烂了算谁的？')">质疑后果承担</button>
+                <button style="border: 1px solid #ef4444; color: #ef4444; background: #fef2f2; border-radius: 16px; padding: 6px 12px; font-size: 12px; cursor: pointer;" onclick="sendMock('少来这套，我明天就要全额退款！')">发送退款指令</button>
+                <button style="border: 1px solid #3b82f6; color: #3b82f6; background: #eff6ff; border-radius: 16px; padding: 6px 12px; font-size: 12px; cursor: pointer;" onclick="sendMock('那如果明天脸烂了算谁的？')">发送质疑指令</button>
             </div>
         </div>
 
         <!-- 右侧：幕后 AI 分析板 -->
         <div class="behind-scenes">
-            <h2 style="margin-top: 0; color: #fff; margin-bottom: 8px;">系统到底做了什么？</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 32px; line-height: 1.6;">如果是传统代运营或微商，这单在半夜 2 点无人回复时，就已经变成实打实的 12315 投诉和差评了。但灵谋 AI 在 1 秒内完成了以下操作：</p>
+            <h2 style="margin-top: 0; color: #fff; margin-bottom: 8px;">AI 进程日志</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 32px; line-height: 1.6;">实时监控客户互动过程中的后台并发计算轨迹。</p>
             
             <div class="magic-card">
-                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px;">⚡ 第一步：情绪阻断与策略切换</div>
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px;">[Process_01] 语义识别与策略熔断</div>
                 <div style="color: #cbd5e1; font-size: 13px; line-height: 1.6;">
                     监测到高危词 <span class="tag-pill danger">毁容</span> <span class="tag-pill danger">12315投诉</span> <span class="tag-pill danger">退款</span>。<br>
                     AI 立即停止了一切“营销卖卡”模式，强行切入**“卑微安抚 + 专家托底”**的公关话术模板。
@@ -96,7 +96,7 @@
             </div>
             
             <div class="magic-card">
-                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px;">⚡ 第二步：隐形自动打标 (资产沉淀)</div>
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px;">[Process_02] 意图解析与标签萃取</div>
                 <div style="color: #cbd5e1; font-size: 13px; line-height: 1.6; margin-bottom: 12px;">
                     此时，无论她在发什么火，AI 都在无情地给她打标签：
                 </div>
@@ -108,20 +108,13 @@
             </div>
             
             <div class="magic-card">
-                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px;">⚡ 第三步：越级警报推送</div>
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px;">[Process_03] 异常升级与越权分发</div>
                 <div style="color: #cbd5e1; font-size: 13px; line-height: 1.6;">
                     在安抚完毕的瞬间，系统已经把这条工单标红，直接越过了排班表，以“最高优先级”硬塞进了【老板娘总控台】和【店长芳芳待办列表】中。
                 </div>
             </div>
             
-            <div style="margin-top: 40px; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px dashed var(--card-border);">
-                <div style="color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 8px;">剧情推进提示：</div>
-                <div style="color: var(--text-muted); font-size: 13px; line-height: 1.6;">
-                    AI 已经在半夜稳住了客户。现在时间来到了第二天早上 9 点。店长芳芳打卡上班，她会看到什么？她又将如何利用 AI 扭转局面，甚至反而让王女士心甘情愿再掏钱？
-                </div>
-            </div>
-
-            <a href="场景演示_员工端模拟.html" class="nav-scene">下一步：进入【员工企微端】化解危机并逼单升卡 →</a>
+            <a href="场景演示_员工端模拟.html" class="nav-scene" style="background: #3b82f6;">切换至员工端视图 →</a>
         </div>
     </div>
 

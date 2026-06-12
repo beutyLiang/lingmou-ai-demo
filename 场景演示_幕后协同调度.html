@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>演示场景 4：幕后业务大盘协同调度 - 灵谋AI</title>
+    <title>后台协同调度大盘 - 灵谋AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="common.css">
     <style>
@@ -33,17 +33,17 @@
     <div class="header" style="margin-bottom: 0;">
         <div class="page-title">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-            <span>剧情场 4：经营结果生成器 (幕后清算)</span>
+            <span>后台协同调度中心</span>
         </div>
-        <a href="场景演示_员工端模拟.html" class="back-btn">← 回到员工端</a>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 回到总控台</a>
     </div>
 
     <div class="grid-layout">
         <div class="receipt-card">
-            <div class="receipt-title">本次战役价值结算单</div>
-            <div class="receipt-subtitle">您刚刚亲历的 10 分钟内，灵谋 AI 底层运转了 142 次计算，最终为您：</div>
+            <div class="receipt-title">工单级 ROI 清算报告</div>
+            <div class="receipt-subtitle">本次工单处理过程中，系统后台共发起 142 次并发计算，产生以下业务价值：</div>
             
-            <div style="font-size: 16px; color: #fff; font-weight: 600;">成功守住了</div>
+            <div style="font-size: 16px; color: #fff; font-weight: 600;">总计挽回/创收金额</div>
             <div class="number-huge">¥ 21,780</div>
             
             <div class="breakdown">
@@ -62,18 +62,18 @@
             </div>
             
             <div style="margin-top: 40px; font-size: 13px; color: var(--text-muted);">
-                如果刚才不是系统拦截，而是靠那个“危机处理短板”的员工小张去回复。<br>
-                今天这家店，不仅会丢掉这 21780 块钱，还会喜提一次 12315 投诉。
+                工单状态：已闭环归档<br>
+                总耗时：02:14:35 (含深夜静默挂机期)
             </div>
             
             <div class="cogs-section">
-                <div class="cog">参与模块一：<span>智能客服</span> (夜间稳局)</div>
-                <div class="cog">参与模块二：<span>智脑总控</span> (越级报警)</div>
-                <div class="cog">参与模块三：<span>销售顾问</span> (降维话术)</div>
-                <div class="cog">参与模块四：<span>岗位教练</span> (员工闭环)</div>
+                <div class="cog">调用节点：<span>智能客服</span></div>
+                <div class="cog">调用节点：<span>智脑总控</span></div>
+                <div class="cog">调用节点：<span>销售顾问</span></div>
+                <div class="cog">调用节点：<span>岗位教练</span></div>
             </div>
             
-            <a href="场景演示_老板端总控.html" class="back-home" onclick="lmDB.reset()">看完戏了，清空数据，重新回到【今日指挥台】 →</a>
+            <a href="场景演示_老板端总控.html" class="back-home" onclick="lmDB.reset()">重置工单数据并返回大盘 →</a>
         </div>
     </div>
 
