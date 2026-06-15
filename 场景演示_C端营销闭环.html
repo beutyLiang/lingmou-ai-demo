@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>C端裂变与AI承接闭环 - 灵谋AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .grid-layout { grid-template-columns: 400px 1fr; height: calc(100vh - 120px); gap: 32px;}
+        
+        /* 手机壳 */
+        .phone-mockup { width: 375px; height: 812px; background: #fff; border-radius: 40px; border: 12px solid #1e293b; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); display: flex; flex-direction: column;}
+        .phone-notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 150px; height: 30px; background: #1e293b; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; z-index: 10;}
+        .phone-header { background: #f8fafc; padding: 40px 20px 16px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: 600; color: #000; position: relative;}
+        .chat-area { flex: 1; padding: 20px; background: #f1f5f9; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth;}
+        
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; position: relative; animation: fadeIn 0.3s ease-out;}
+        .msg.user { background: #10b981; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px;}
+        .msg.ai { background: #fff; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .msg-time { font-size: 10px; color: #94a3b8; margin-top: 4px; text-align: center; width: 100%;}
+        
+        /* 营销卡片 */
+        .marketing-card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);}
+        .m-tag { background: #ef4444; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; display: inline-block; margin-bottom: 8px;}
+        .m-title { font-weight: 600; font-size: 16px; color: #0f172a; margin-bottom: 4px;}
+        .m-price { color: #ef4444; font-size: 24px; font-weight: 700; margin: 8px 0;}
+        .m-btn { background: #ef4444; color: #fff; border: none; padding: 10px 24px; border-radius: 20px; font-weight: 600; width: 100%; cursor: pointer; transition: 0.2s;}
+        .m-btn:active { transform: scale(0.98); }
+        .m-btn.claimed { background: #94a3b8; pointer-events: none;}
+
+        /* 选项卡片 */
+        .option-btn { background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; display: inline-block; margin: 4px 4px 0 0; transition: 0.2s;}
+        .option-btn:hover { border-color: #3b82f6; color: #3b82f6; }
+        
+        /* 幕后拆解板 */
+        .behind-scenes { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 16px; padding: 32px; position: relative; overflow: hidden;}
+        .behind-scenes::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);}
+        
+        .magic-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(0,229,255,0.2); padding: 20px; border-radius: 12px; margin-bottom: 24px; position: relative; opacity: 0.3; transition: 0.5s; transform: translateX(20px);}
+        .magic-card.active { opacity: 1; border-color: var(--primary); transform: translateX(0); box-shadow: 0 0 20px rgba(0,229,255,0.1);}
+        .magic-card::before { content: '漏斗拆解'; position: absolute; top: -10px; left: 16px; background: var(--bg-dark); color: var(--primary); font-size: 11px; padding: 0 8px; font-weight: 600;}
+        
+        .tag-pill { background: rgba(0,229,255,0.1); color: #00e5ff; border: 1px solid rgba(0,229,255,0.3); padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; margin: 4px; font-weight: 600;}
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="header" style="margin-bottom: 12px;">
+        <div class="page-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>C端裂变与 AI 承接大闭环 (排队免单版)</span>
+        </div>
+        <a href="场景演示_老板端总控.html" class="back-btn">← 回到总控台</a>
+    </div>
+    <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 32px;">当前场景：客户通过好友分享的【拓客卡】扫码进入【排队免单池】，并触发 AI 健康管家的极速建档与兜底安抚机制。</div>
+
+    <div class="grid-layout">
+        <!-- 左侧：客户端模拟手机 -->
+        <div class="phone-mockup">
+            <div class="phone-notch"></div>
+            <div class="phone-header">
+                XX医疗美容中心
+                <div style="font-size: 10px; color: #64748b; font-weight: 400;">您的专属健康管家</div>
+            </div>
+            
+            <div class="chat-area" id="chat-container">
+                <div class="msg-time">下午 14:30</div>
+                
+                <!-- P1 营销入口：排队免单 -->
+                <div class="msg ai" style="width: 100%; padding: 0; background: transparent; box-shadow: none;" id="step-1-ui">
+                    <div class="marketing-card" style="border: 2px solid #ef4444;">
+                        <div class="m-tag" style="background:#ef4444; font-size:12px;">🔥 满 7 人免单活动</div>
+                        <div class="m-title">深层极速焕颜套餐</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top:4px;">参与门槛金（未成团全额享服务）</div>
+                        <div class="m-price">¥ 398.00</div>
+                        
+                        <!-- 进度条 -->
+                        <div style="background:rgba(239,68,68,0.1); border-radius:12px; padding:12px; margin:12px 0; text-align:left;">
+                            <div style="font-size:12px; color:#ef4444; font-weight:bold; margin-bottom:8px; display:flex; justify-content:space-between;">
+                                <span>当前排队成团进度：</span>
+                                <span>5 / 7</span>
+                            </div>
+                            <div style="height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden;">
+                                <div style="height:100%; width:71%; background:#ef4444; border-radius:4px;"></div>
+                            </div>
+                            <div style="font-size:11px; color:#64748b; margin-top:8px;">再进 2 人，立刻开奖 1 人全额免单返现！</div>
+                        </div>
+
+                        <button class="m-btn" id="claim-btn" onclick="triggerStep2()">支付 398 抢位入池</button>
+                        <div style="font-size:10px; color:#94a3b8; margin-top:8px;">支付即锁单，30天未中签送千元超额权益</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：幕后 AI 分析板 -->
+        <div class="behind-scenes">
+            <h2 style="margin-top: 0; color: #fff; margin-bottom: 8px;">裂变漏斗与 AI 兜底动作</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 32px; line-height: 1.6;">展示极端诱惑力的裂变玩法，是如何与 AI 建档及“不退现金补偿规则”完美结合的。</p>
+            
+            <div class="magic-card active" id="card-1">
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 8px;">[P1] 强诱惑裂变：排队免单池</div>
+                <div style="color: #cbd5e1; font-size: 13px; line-height: 1.6;">
+                    利用人性贪婪，打造“满7免1”的排队机制。让用户看到进度条即将拉满，产生极强的付费和拉人冲动。<br>
+                    <span class="tag-pill" style="margin-top:8px; background:rgba(239,68,68,0.1); color:#ef4444; border-color:#ef4444;">极速回笼资金池</span>
+                </div>
+            </div>
+            
+            <div class="magic-card" id="card-2">
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 8px;">[P2/P3] 裂变途中的 AI 拦截建档</div>
+                <div style="color: #cbd5e1; font-size: 13px; line-height: 1.6;">
+                    付款入池后，AI 管家顺势弹出：<span style="color:#ef4444;">“为了中签后能匹配专属理疗师，请先做极速体质评估。”</span><br>
+                    用户在等待免单的狂热中，会毫无防备地交出个人核心健康数据。<br>
+                    <span class="tag-pill" style="margin-top:8px;">洗流量</span> <span class="tag-pill">建立终身数据资产</span>
+                </div>
+            </div>
+            
+            <div class="magic-card" id="card-3">
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 8px;">[P4] 兜底退出机制 (保命防线)</div>
+                <div style="color: #cbd5e1; font-size: 13px; line-height: 1.6;">
+                    如果排队不动了怎么防客诉？**绝不退现！**<br>
+                    AI 结合用户的体质标签，顺势送出“超额权益补偿”（价值数倍的服务），让客户觉得赚到，成功把退款危机化解为到店核销。<br>
+                    <span class="tag-pill" style="margin-top:8px;">避免资金流失</span> <span class="tag-pill">用服务化解危机</span>
+                </div>
+            </div>
+
+            <div class="magic-card" id="card-4">
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 8px;">[P5] 拓客卡分发与裂变核销</div>
+                <div style="color: #cbd5e1; font-size: 13px; line-height: 1.6;">
+                    完成安抚后，系统自动抛出【二级专属拓客卡】，引导客户把卡分享给闺蜜，继续裂变。<br>
+                    <span class="tag-pill" style="margin-top:8px; background: rgba(16,185,129,0.1); color:#10b981; border-color:#10b981;">形成完整的资金与数据飞轮</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        const chatArea = document.getElementById('chat-container');
+
+        function triggerStep2() {
+            // Update button
+            const btn = document.getElementById('claim-btn');
+            btn.innerText = "已领取至卡包";
+            btn.classList.add('claimed');
+
+            // Update right board
+            document.getElementById('card-1').classList.remove('active');
+            document.getElementById('card-2').classList.add('active');
+
+            // Add P2/P3 Chat
+            setTimeout(() => {
+                chatArea.innerHTML += `
+                    <div class="msg ai">
+                        ✅ 支付成功！您已成功进入【008号免单池】，当前排位 6/7。<br><br>
+                        我是本店的专属 AI 健康管家，为了在您中签后为您指派最合适的理疗师，请先帮我完善一下您的专属健康档案。您最近的主要面部/身体困扰是？
+                        <div style="margin-top: 12px; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+                            <div class="option-btn" onclick="triggerStep3(this, '肤色暗沉发黄')">肤色暗沉发黄</div>
+                            <div class="option-btn" onclick="triggerStep3(this, '严重敏感泛红')">严重敏感泛红</div>
+                            <div class="option-btn" onclick="triggerStep3(this, '熬夜黑眼圈重')">熬夜黑眼圈重</div>
+                        </div>
+                    </div>
+                `;
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 800);
+        }
+
+        function triggerStep3(element, text) {
+            // Disable options
+            const options = element.parentElement.querySelectorAll('.option-btn');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            element.style.background = '#3b82f6';
+            element.style.color = '#fff';
+
+            // Update right board
+            document.getElementById('card-2').classList.remove('active');
+            document.getElementById('card-3').classList.add('active');
+
+            // Append User Msg
+            setTimeout(() => {
+                chatArea.innerHTML += `<div class="msg user">${text}</div>`;
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 400);
+
+            // Append AI Expert Advice (P4)
+            setTimeout(() => {
+                chatArea.innerHTML += `<div style="text-align: center; margin: 8px 0;"><span style="background: rgba(0,0,0,0.05); color: #64748b; font-size: 11px; padding: 4px 12px; border-radius: 12px;">AI 正在生成专属健康建议...</span></div>`;
+                chatArea.scrollTop = chatArea.scrollHeight;
+
+                setTimeout(() => {
+                    chatArea.lastElementChild.remove();
+                    chatArea.innerHTML += `
+                        <div class="msg ai">
+                            收到，已为您打上【敏感体质】专属标签。<br><br>
+                            ⚠️ <b>兜底补偿机制触发提醒：</b><br>
+                            亲爱的，检测到您所在的【008号池】流转较慢。为了感谢您的耐心等待，老板娘特意给您启动了兜底特权：<br>
+                            您的 398 元不仅保留原购的焕颜项目，现在直接<b>额外赠送您价值 ¥1980 的 10次基础补水修复年卡！</b>已放入您的卡包。<br><br>
+                            顺便为您生成了您的专属【二级拓客卡】，分享给闺蜜，她享底价，您拿 20% 体验金返点哦！
+                        </div>
+                    `;
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                    triggerStep4();
+                }, 1500);
+            }, 1000);
+        }
+
+        function triggerStep4() {
+            // Update right board
+            setTimeout(() => {
+                document.getElementById('card-3').classList.remove('active');
+                document.getElementById('card-4').classList.add('active');
+
+                // Append Booking Card (P5)
+                chatArea.innerHTML += `
+                    <div class="msg ai" style="width: 100%; padding: 0; background: transparent; box-shadow: none;">
+                        <div class="marketing-card" style="border: 2px solid #10b981; padding: 12px;">
+                            <div style="font-weight: 600; font-size: 14px; margin-bottom: 8px;">🎁 超额权益核销通道</div>
+                            <div style="font-size: 12px; color: #64748b; margin-bottom: 12px;">已绑定您的专属档案与拓客码，随时可到店核销。</div>
+                            <div style="display: flex; gap: 8px;">
+                                <button style="flex: 1; background: #fff; border: 1px solid #10b981; color: #10b981; padding: 8px 0; border-radius: 16px; cursor: pointer;">生成我的拓客海报</button>
+                                <button style="flex: 1; background: #10b981; border: none; color: #fff; padding: 8px 0; border-radius: 16px; cursor: pointer;" onclick="finishDemo(this)">马上预约到店享用</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 1500);
+        }
+
+        function finishDemo(btn) {
+            btn.innerText = "预约成功";
+            btn.style.background = "#059669";
+            btn.style.pointerEvents = "none";
+            chatArea.innerHTML += `
+                <div style="text-align: center; margin: 16px 0;">
+                    <span style="background: rgba(16,185,129,0.1); color: #059669; font-size: 12px; padding: 6px 12px; border-radius: 12px; font-weight:600;">
+                        ✓ 客户已成功转化为到店线索，数据已同步至老板端看板
+                    </span>
+                </div>
+            `;
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+    </script>
+</body>
+</html>

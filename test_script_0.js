@@ -1,171 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>老板端总控台 - 灵谋AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="common.css">
-    <style>
-        body { display: flex; height: 100vh; overflow: hidden; background: #0f111a; margin: 0; font-family: 'Inter', sans-serif; }
-        
-        /* 侧边栏导航 */
-        .sidebar { width: 220px; background: rgba(255,255,255,0.02); border-right: 1px solid var(--card-border); display: flex; flex-direction: column; padding: 24px 16px; z-index: 10; transition: 0.3s; }
-        .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding: 0 8px; }
-        .logo-text { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 1px; }
-        .nav-menu { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-        .nav-item { padding: 12px 16px; border-radius: 8px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; transition: 0.2s; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        .nav-item.active { background: rgba(0,229,255,0.1); color: #00e5ff; border-right: 3px solid #00e5ff; border-radius: 8px 0 0 8px; }
-        
-        /* 主内容区 */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .page-title { font-size: 18px; font-weight: 600; color: #fff; }
-        
-        /* 数据天际线 (全局可点击) */
-        .overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 20px 40px; }
-        .overview-box { padding: 16px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--card-border); text-align: center; transition: 0.3s; cursor: pointer; position: relative; overflow: hidden; }
-        .overview-box:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .overview-box::after { content: '点击深入分析 →'; position: absolute; bottom: 4px; left: 0; width: 100%; text-align: center; font-size: 10px; color: var(--primary); opacity: 0; transition: 0.3s; }
-        .overview-box:hover::after { opacity: 1; bottom: 8px; }
-        
-        /* GenUI 区域 (现仅包含工作台) */
-        #gen-ui { display: flex; flex-direction: column; padding: 0 40px 24px 40px; flex: 1; overflow: hidden; transition: 0.3s; }
-        
-        /* 传统模式下的布局变化 */
-        body.classic-mode .chat-container { display: none; }
-        
-        /* 右侧：对话控制台 (占全屏1/4，定格全高) */
-        .chat-container { width: 25vw; min-width: 320px; background: rgba(255,255,255,0.02); border-left: 1px solid var(--card-border); display: flex; flex-direction: column; position: relative; z-index: 20; }
-        .chat-header { padding: 20px 24px; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; gap: 16px; background: rgba(0,0,0,0.3); }
-        .chat-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 15px rgba(0,229,255,0.3); }
-        .chat-title-info { display: flex; flex-direction: column; gap: 4px; }
-        .chat-name { font-size: 16px; font-weight: 600; color: #fff; }
-        .chat-status { font-size: 12px; color: var(--success); }
-        .chat-history { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
-        .msg { max-width: 90%; font-size: 13px; line-height: 1.6; padding: 16px; border-radius: 12px; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .msg.ai { background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.2); color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .msg.user { background: rgba(255,255,255,0.1); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
-        
-        .quick-actions { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-        .quick-action-chip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-size: 12px; padding: 6px 12px; border-radius: 16px; cursor: pointer; transition: 0.2s; white-space: nowrap; }
-        .quick-action-chip:hover { background: rgba(0,229,255,0.1); color: #00e5ff; border-color: rgba(0,229,255,0.3); }
-        
-        .wizard-btn { display: block; width: 100%; text-align: left; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px 16px; margin-top: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 13px; }
-        .wizard-btn:hover { background: rgba(0,229,255,0.15); border-color: rgba(0,229,255,0.4); }
-        .wizard-btn.done { opacity: 0.5; text-decoration: line-through; border-color: transparent; }
-        
-        .chat-input-area { padding: 16px 24px 24px 24px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--card-border); }
-        .input-box { display: flex; gap: 12px; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); padding: 8px 16px; border-radius: 24px; }
-        .input-box input { flex: 1; background: transparent; border: none; color: #fff; font-size: 13px; outline: none; }
-        .send-btn { background: var(--primary); color: #000; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        
-        /* 右栏：生成式工作台 / 传统大屏容器 */
-        .workspace-container { background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        #gen-ui.classic-mode .workspace-container { border: 1px solid var(--card-border); border-top: 4px solid var(--primary); }
-        .workspace-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); }
-        .workspace-title { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
-        .workspace-content { flex: 1; padding: 24px; overflow-y: auto; color: var(--text-muted); }
-        
-        .gen-widget { animation: fadeIn 0.4s ease-out; display: flex; flex-direction: column; gap: 16px; height: 100%; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .data-card { background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
-    </style>
-</head>
-<body>
 
-    <!-- 全局侧边栏 (动态路由切换) -->
-    <aside class="sidebar">
-        <div class="logo-area">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-            <div class="logo-text">灵谋 AI</div>
-        </div>
-        <ul class="nav-menu">
-            <li class="nav-item active" id="nav-home" onclick="switchContext('home')"><span>🏠</span> 智脑总控</li>
-            <li class="nav-item" id="nav-marketing" onclick="switchContext('marketing')"><span>🔥</span> 裂变营销</li>
-            <li class="nav-item" id="nav-content" onclick="switchContext('content')"><span>📹</span> 拓客与内容</li>
-            <li class="nav-item" id="nav-crm" onclick="switchContext('crm')"><span>🗂️</span> 客户与店务</li>
-            <li class="nav-item" id="nav-staff" onclick="switchContext('staff')"><span>👥</span> 员工与培训</li>
-            <li class="nav-item" id="nav-finance" onclick="switchContext('finance')"><span>📈</span> 财务与决策</li>
-        </ul>
-        
-        <div style="margin-top: auto; padding: 16px; background: rgba(255,255,255,0.02); border-radius: 8px; font-size: 12px; color: var(--text-muted);">
-            <div>当前门店：智美星耀 (旗舰店)</div>
-            <div style="color: var(--success); margin-top: 4px;">系统状态：10大智能体全时运转</div>
-        </div>
-    </aside>
-
-    <main class="main-content">
-        <div class="header">
-            <div class="page-title" id="top-title">总控指挥中心</div>
-            <div>
-                <button id="ui-toggle-btn" class="btn-primary" onclick="toggleUI()" style="background: rgba(255,255,255,0.1); border: 1px solid #475569; color: #fff; padding: 6px 16px; font-size: 12px; margin-right: 12px; transition: 0.3s;">📊 切换至传统大屏仪表盘</button>
-                <a href="场景演示_员工端模拟.html" class="btn-primary" style="background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 6px 16px; font-size: 12px; text-decoration: none; margin-right: 12px;">切换至企微员工端</a>
-            </div>
-        </div>
-
-        <!-- 顶部天际线 (全域可点击穿透) -->
-        <div class="overview-grid">
-            <div class="overview-box" onclick="triggerDirectAction('finance', 'finance_revenue', '帮我拆解一下今日流水来源。', '已为您拆解。')">
-                <div style="font-size: 12px; color: var(--text-muted);">今日营业流水</div>
-                <div style="font-size: 18px; font-weight: 600; color: #fff; margin-top: 4px;"><span style="color: var(--success);">¥12,850</span></div>
-            </div>
-            <div class="overview-box" onclick="triggerDirectAction('content', 'traffic', '有哪些待办的营销任务？', '今天有 2 条高潜营销任务待您审批：同城流量风口已到达。')">
-                <div style="font-size: 12px; color: var(--text-muted);">待办营销任务</div>
-                <div style="font-size: 18px; font-weight: 600; color: #fff; margin-top: 4px;"><span style="color: var(--primary);">2 项</span></div>
-            </div>
-            <div class="overview-box" style="border-color: rgba(255,51,102,0.3); background: rgba(255,51,102,0.05);" onclick="triggerDirectAction('crm', 'crisis', '把这个待处理的高危预警打开我看看。', '已调出：王女士由于泛红产生客诉退款危机，请立刻干预！')">
-                <div style="font-size: 12px; color: var(--warning);">待处理预警</div>
-                <div style="font-size: 18px; font-weight: 800; color: #fff; margin-top: 4px;"><span style="color: var(--warning);">1 项</span></div>
-            </div>
-            <div class="overview-box" onclick="triggerDirectAction('staff', 'staff', '检查一下今天 AI 智能体和全体员工的运转情况。', 'AI 与员工配合完美。以下是今日排班与 AI 代工统计表：')">
-                <div style="font-size: 12px; color: var(--text-muted);">AI 智能体接管率</div>
-                <div style="font-size: 18px; font-weight: 600; color: #fff; margin-top: 4px;"><span style="color: var(--primary);">82%</span></div>
-            </div>
-        </div>
-
-        <div id="gen-ui">
-            <!-- 左侧：生成式工作台 / 传统大屏满铺区 -->
-            <div class="workspace-container">
-                <div class="workspace-header">
-                    <div class="workspace-title" id="ws-title">✨ AI 智能工作台</div>
-                </div>
-                <div class="workspace-content" id="ws-content">
-                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0.3;">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                        <p style="margin-top: 16px; font-size: 13px;" id="ws-placeholder">请点击上方数据，或左侧菜单</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- 右侧全高：对话控制台 (1/4 定格) -->
-    <div class="chat-container">
-        <div class="chat-header">
-            <div class="chat-avatar">👩🏻‍💼</div>
-            <div class="chat-title-info">
-                <div class="chat-name">智美星耀老板娘分身</div>
-                <div class="chat-status">🟢 全天候在线待命</div>
-            </div>
-        </div>
-        <div class="chat-history" id="chat-history"></div>
-        <div class="chat-input-area">
-            <div class="quick-actions">
-                <div class="quick-action-chip" onclick="quickAction('home')">📊 数据看板</div>
-                <div class="quick-action-chip" onclick="quickAction('staff')">✅ 待办任务</div>
-                <div class="quick-action-chip" onclick="quickAction('content')">🎬 视频制作</div>
-                <div class="quick-action-chip" onclick="quickAction('crm')">👥 客户管理</div>
-            </div>
-            <div class="input-box">
-                <input type="text" placeholder="向智能体输入任意指令..." id="chat-input" onkeypress="if(event.key === 'Enter') { sendCustomMsg(); }">
-                <button class="send-btn" onclick="sendCustomMsg()">↑</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
         let isClassicMode = false;
 
         function toggleUI() {
@@ -179,14 +12,12 @@
                 btn.style.color = '#00e5ff';
                 btn.style.borderColor = 'var(--primary)';
                 genUi.classList.add('classic-mode');
-                document.body.classList.add('classic-mode');
             } else {
                 btn.innerHTML = '📊 切换至传统大屏仪表盘';
                 btn.style.background = 'rgba(255,255,255,0.1)';
                 btn.style.color = '#fff';
                 btn.style.borderColor = '#475569';
                 genUi.classList.remove('classic-mode');
-                document.body.classList.remove('classic-mode');
             }
             
             // 刷新当前选中的菜单视图
@@ -197,20 +28,12 @@
         const contexts = {
             'home': {
                 title: '总控指挥中心',
-                greeting: `老板娘早上好！<br>为了保证今天的最佳经营效果，我为您梳理了<b>【今日作战向导】</b>：`,
+                greeting: `老板娘早上好！<br>为了保证今天的最佳经营效果，我为您梳理了<b>【今日作战 4 步向导】</b>：`,
                 buttons: [
                     { id: 'btn-h1', text: '📹 生成今日引流短视频', action: 'video', reqMsg: '开始执行第一步：帮我搞定今天的引流短视频。', aiResp: '好的。系统侦测到“入夏美白”需求飙升。请在右侧生成您的数字人播报。' },
-                    { id: 'btn-h5', text: '📈 查看 [9.9秒杀] 战报', action: 'classic_home', reqMsg: '帮我调出最近那场 9.9 秒杀活动的最终战报。', aiResp: '好的老板，本次活动共引流 120 人，AI 成功介入建档 115 人，最终转化为到店线索 45 人。详细漏斗数据已在右侧为您展示。' },
                     { id: 'btn-h2', text: '🗂️ 查看全维客户资产大盘', action: 'crm_radar', reqMsg: '我要看所有客户的概况和意向分类。', aiResp: '正在扫描全盘交互数据...已为您生成【AI 客户资产全维大盘】。' },
-                    { id: 'btn-h3', text: '🚨 处理王女士退款危机', action: 'crisis', reqMsg: '昨晚那个过敏客诉是怎么回事？', aiResp: 'VIP王女士凌晨因泛红想退款。建议使用升单策略化解，请在右侧审批干预。' }
-                ]
-            },
-            'marketing': {
-                title: '裂变与营销中心',
-                greeting: `已为您打开【裂变营销中心】。<br>您可以在这里一键设置最凶猛的排队免单或裂变拓客卡。`,
-                buttons: [
-                    { id: 'btn-mk1', text: '🔥 开启 [排队免单] 玩法', action: 'marketing_setup', reqMsg: '帮我设计一个排队免单活动，把客流拉满。', aiResp: '好的，正在调取“排队免单”智能模型。<br>建议设置为【满7成团，1人免单】，未中签者给予价值补偿（不退现）。请在右侧控制面板微调规则并一键发布。' },
-                    { id: 'btn-mk2', text: '💳 开启 [多级拓客卡] 分发', action: 'marketing_setup', reqMsg: '我要发一张新的裂变拓客卡。', aiResp: '已为您搭建 2 级佣金分发拓客卡模板。为防范风控，建议系统自动把佣金转化为“到店核销体验金”。请在右侧审批。' }
+                    { id: 'btn-h3', text: '🚨 处理王女士退款危机', action: 'crisis', reqMsg: '昨晚那个过敏客诉是怎么回事？', aiResp: 'VIP王女士凌晨因泛红想退款。建议使用升单策略化解，请在右侧审批干预。' },
+                    { id: 'btn-h4', text: '👥 派发员工与培训任务', action: 'staff', reqMsg: '安排今天的员工任务。', aiResp: '已生成今日排班表，并自动生成了《术后安抚对练》。' }
                 ]
             },
             'content': {
@@ -331,55 +154,11 @@
             setTimeout(() => appendMsg('收到。正在为您调取深度分析数据，请稍候...', 'ai'), 500);
         }
 
-        function fillInput(text) {
-            const input = document.getElementById('chat-input');
-            input.value = text;
-            input.focus();
-            sendCustomMsg();
-        }
-
-        function quickAction(ctxName) {
-            const input = document.getElementById('chat-input');
-            const nameMap = {
-                'home': '帮我调出今天的数据看板。',
-                'staff': '查看今天的待办和员工任务。',
-                'content': '准备开始今天的短视频制作。',
-                'crm': '帮我调出所有客户的大盘管理视图。'
-            };
-            input.value = nameMap[ctxName];
-            appendMsg(input.value, 'user');
-            input.value = '';
-            
-            setTimeout(() => {
-                if (ctxName === 'home') {
-                    if (!isClassicMode) toggleUI(); // 强制进入传统大屏模式以查看看板
-                    switchContext('home');
-                } else {
-                    if (isClassicMode) toggleUI(); // 强制进入 AI 模式
-                    switchContext(ctxName);
-                    
-                    // 模拟 AI 回复并立刻渲染主工作区
-                    setTimeout(() => {
-                        if (ctxName === 'staff') {
-                            appendMsg('已展示今日排班。店长专注于维系，小李负责履约。', 'ai');
-                            renderWorkspace('staff');
-                        } else if (ctxName === 'content') {
-                            appendMsg('已为您生成【30天 IP 起盘矩阵】与【今日精细化拍摄分镜】。请在右侧查阅并打卡。', 'ai');
-                            renderWorkspace('video');
-                        } else if (ctxName === 'crm') {
-                            appendMsg('正在穿透后台数据库...已生成【全息客户资产名册】。您可以在右侧下钻查看任何人的深度画像。', 'ai');
-                            renderWorkspace('crm_radar');
-                        }
-                    }, 500);
-                }
-            }, 400);
-        }
-
         function renderWorkspace(type) {
             if (type === 'classic_home') {
                 wsTitle.innerHTML = '📊 传统系统总览';
                 wsContent.innerHTML = `
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; height:100%; overflow-y:auto; padding-bottom:20px;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; height:100%;">
                         <div class="data-card" style="display:flex; flex-direction:column;">
                             <div style="font-size:16px; font-weight:600; margin-bottom:16px;">📅 待办任务清单</div>
                             <div style="display:flex; justify-content:space-between; padding:16px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer; background:rgba(255,255,255,0.02); border-radius:8px; margin-bottom:8px;" onclick="switchContext('content')"><span>📹 生成今日引流短视频</span><span style="color:var(--primary);">去处理 →</span></div>
@@ -392,26 +171,6 @@
                                 <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:8px;">工单号：#C-2931 王女士客诉</div>
                                 <div style="font-size:12px; color:var(--text-muted); margin-bottom:16px; line-height:1.6;">状态：已由 AI 在凌晨安抚并冻结。<br>风险点：怕毁容、急需退款。<br>潜在损失：¥19,800</div>
                                 <button class="btn-primary" style="background:var(--warning); color:#000; border:none; width:100%;" onclick="alert('已强制派发给店长去处理！')">处理：一键派发至店长</button>
-                            </div>
-                        </div>
-                        <div class="data-card" style="grid-column: 1 / 3; border-top: 4px solid #ef4444; display:flex; flex-direction:column; background: linear-gradient(180deg, rgba(239,68,68,0.05) 0%, rgba(0,0,0,0) 100%);">
-                            <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#fff;">🔥 裂变玩法实时监控 (排队免单专场)</div>
-                            <div style="display:flex; justify-content:space-between; gap:16px; margin-top:8px;">
-                                <div style="flex:1; background:rgba(0,0,0,0.2); border:1px solid rgba(239,68,68,0.2); padding:16px; border-radius:8px; text-align:center;">
-                                    <div style="font-size:24px; font-weight:800; color:#ef4444;">12 / 18</div>
-                                    <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">进行中的免单池 / 总池数</div>
-                                    <div style="font-size:11px; color:#ef4444; margin-top:4px; font-weight:600;">⚠️ 3 个池子流转缓慢</div>
-                                </div>
-                                <div style="flex:1; background:rgba(0,0,0,0.2); border:1px solid rgba(16,185,129,0.2); padding:16px; border-radius:8px; text-align:center;">
-                                    <div style="font-size:24px; font-weight:800; color:#10b981;">¥45,800</div>
-                                    <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">已安全沉淀资金池 (无退款风险)</div>
-                                    <div style="font-size:11px; color:#10b981; margin-top:4px;">已触发超额权益补偿 28 人</div>
-                                </div>
-                                <div style="flex:1; background:rgba(0,0,0,0.2); border:1px solid rgba(0,229,255,0.2); padding:16px; border-radius:8px; text-align:center;">
-                                    <div style="font-size:24px; font-weight:800; color:#00e5ff;">320 人</div>
-                                    <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">裂变拓客卡新增人头</div>
-                                    <div style="font-size:11px; color:#00e5ff; margin-top:4px;">其中 185 人已连入 AI 建档</div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -611,7 +370,7 @@
                     </div>
                 `;
             } else if (type === 'video') {
-                wsTitle.innerHTML = isClassicMode ? '📹 传统视图：短视频排期大盘' : '📹 AI 导演与 IP 孵化大盘';
+                wsTitle.innerHTML = isClassicMode ? '📹 传统视图：短视频排期日历' : '📹 AI 导演与 IP 孵化工厂';
                 wsContent.innerHTML = `
                     <div class="gen-widget" style="height:100%; display:flex; flex-direction:column;">
                         <!-- 核心信息融合池 -->
@@ -629,197 +388,130 @@
                             </div>
                         </div>
 
-                        <!-- 30天全屏日历表 -->
-                        <div class="data-card" style="flex:1; display:flex; flex-direction:column; padding:16px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                                <div style="font-size:16px; color:#fff; font-weight:600;">📅 30天 IP 拍摄日历大盘 (6月)</div>
-                                <div style="font-size:12px; color:var(--text-muted);">点击任意日期下钻查看【流水线生产过程】</div>
-                            </div>
-                            
-                            <div style="display:grid; grid-template-columns: repeat(7, 1fr); gap:12px; text-align:center; font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-                                <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
-                            </div>
-                            <div id="video-calendar-grid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:12px; flex:1; overflow-y:auto; padding-right:4px;">
-                                <div onclick="renderWorkspace('video_day_detail_1')" style="cursor:pointer; background:rgba(16,185,129,0.15); border:1px solid var(--success); border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:16px 0; color:var(--success); transition:0.2s;" onmouseover="this.style.background='rgba(16,185,129,0.25)'" onmouseout="this.style.background='rgba(16,185,129,0.15)'">
-                                    <div style="font-size:20px; font-weight:bold;">1</div>
-                                    <div style="font-size:12px; margin-top:8px;">✅ 已完成</div>
+                        <div style="display:flex; gap:16px; flex:1; min-height:0;">
+                            <!-- 左侧：30天绿色日历表 -->
+                            <div class="data-card" style="flex:1.2; display:flex; flex-direction:column; padding:16px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                                    <div style="font-size:14px; color:#fff; font-weight:600;">📅 30天 IP 拍摄日历表 (6月)</div>
+                                    <div style="font-size:12px; color:var(--text-muted);"><span style="color:var(--success);">■</span> 已完成 <span style="color:rgba(16,185,129,0.3);">■</span> 待完成</div>
                                 </div>
-                                <div onclick="renderWorkspace('video_day_detail')" style="cursor:pointer; background:var(--success); border:1px solid #fff; box-shadow:0 0 15px rgba(16,185,129,0.5); border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:16px 0; color:#000; transition:0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                                    <div style="font-size:20px; font-weight:bold;">2</div>
-                                    <div style="font-size:12px; margin-top:8px;">🎬 今日待拍</div>
+                                
+                                <div style="display:grid; grid-template-columns: repeat(7, 1fr); gap:8px; text-align:center; font-size:12px; color:var(--text-muted); margin-bottom:8px;">
+                                    <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
                                 </div>
-                                <div onclick="renderWorkspace('video_day_detail_3')" style="cursor:pointer; background:rgba(255,255,255,0.05); border:1px dashed rgba(16,185,129,0.4); border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:16px 0; color:var(--text-muted); transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
-                                    <div style="font-size:20px; font-weight:bold;">3</div>
-                                    <div style="font-size:12px; margin-top:8px; color:rgba(16,185,129,0.5);">❗ 待排期</div>
-                                </div>
-                                ${Array.from({length: 27}, (_, i) => `
-                                    <div onclick="renderWorkspace('video_day_detail_3')" style="cursor:pointer; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:16px 0; color:rgba(255,255,255,0.2); transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
-                                        <div style="font-size:20px; font-weight:bold;">${i+4}</div>
-                                        <div style="font-size:12px; margin-top:8px;">❗ 待定</div>
+                                <div id="video-calendar-grid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:8px; flex:1; overflow-y:auto; padding-right:4px;">
+                                    <div onclick="document.getElementById('video-detail-panel').innerHTML=window._vidDay1" style="cursor:pointer; background:rgba(16,185,129,0.15); border:1px solid var(--success); border-radius:4px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:12px 0; color:var(--success); transition:0.2s;" onmouseover="this.style.background='rgba(16,185,129,0.25)'" onmouseout="this.style.background='rgba(16,185,129,0.15)'">
+                                        <div style="font-size:16px; font-weight:bold;">1</div>
+                                        <div style="font-size:11px; margin-top:4px;">✅ 已完成</div>
                                     </div>
-                                `).join('')}
+                                    <div onclick="document.getElementById('video-detail-panel').innerHTML=window._vidDay2" style="cursor:pointer; background:var(--success); border:1px solid #fff; box-shadow:0 0 10px rgba(16,185,129,0.5); border-radius:4px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:12px 0; color:#000; transition:0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                        <div style="font-size:16px; font-weight:bold;">2</div>
+                                        <div style="font-size:11px; margin-top:4px;">🎬 今日待拍</div>
+                                    </div>
+                                    <div onclick="document.getElementById('video-detail-panel').innerHTML=window._vidDay3" style="cursor:pointer; background:rgba(255,255,255,0.05); border:1px dashed rgba(16,185,129,0.4); border-radius:4px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:12px 0; color:var(--text-muted); transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                                        <div style="font-size:16px; font-weight:bold;">3</div>
+                                        <div style="font-size:11px; margin-top:4px; color:rgba(16,185,129,0.5);">❗ 待排期</div>
+                                    </div>
+                                    ${Array.from({length: 27}, (_, i) => `
+                                        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:4px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:12px 0; color:rgba(255,255,255,0.2);">
+                                            <div style="font-size:16px; font-weight:bold;">${i+4}</div>
+                                            <div style="font-size:11px; margin-top:4px;">❗ 待定</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <!-- 右侧：详情展示板 (动态替换) -->
+                            <div class="data-card" style="flex:1.8; display:flex; flex-direction:column; overflow-y:auto; padding:16px;" id="video-detail-panel">
+                                <!-- Default to Day 2 loaded by setTimeout -->
                             </div>
                         </div>
                     </div>
                 `;
-            } else if (type === 'video_day_detail' || type === 'video_day_detail_1' || type === 'video_day_detail_3') {
-                const dayText = type === 'video_day_detail_1' ? "Day 1: 老板娘的下班日常 (已完成)" : (type === 'video_day_detail_3' ? "Day 3: 揭秘避坑指南 (系统预排期)" : "Day 2: 闺蜜被渣带她变美 (今日待拍)");
-                wsTitle.innerHTML = '🎬 AI 流水线生产车间';
-                wsContent.innerHTML = `
-                    <div class="gen-widget" style="height:100%; display:flex; flex-direction:column;">
-                        <button style="align-self:flex-start; background:transparent; border:none; color:var(--primary); cursor:pointer; margin-bottom:12px; font-size:14px; display:flex; align-items:center; gap:4px;" onclick="renderWorkspace('video')">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> 返回 30 天排期大盘
-                        </button>
+
+                // Scripts for dynamic content
+                window._vidDay1 = `
+                    <div style="font-size:16px; color:var(--success); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                        ✅ Day 1: 老板娘的下班日常 (已完成)
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; border:1px dashed rgba(16,185,129,0.3); border-radius:8px; background:rgba(0,0,0,0.2); padding:20px; text-align:center;">
+                        <div style="width:120px; height:80px; background:#111; border:1px solid #333; border-radius:4px; display:flex; justify-content:center; align-items:center; margin-bottom:16px; position:relative; overflow:hidden;">
+                            <div style="position:absolute; width:100%; height:100%; background:linear-gradient(45deg, rgba(16,185,129,0.2), transparent);"></div>
+                            <div style="width:0; height:0; border-top:10px solid transparent; border-bottom:10px solid transparent; border-left:15px solid var(--success); cursor:pointer; z-index:2;"></div>
+                            <div style="position:absolute; bottom:4px; right:4px; font-size:10px; background:rgba(0,0,0,0.8); padding:2px 4px; border-radius:2px; z-index:2;">00:45</div>
+                        </div>
+                        <div style="font-size:14px; color:#fff; margin-bottom:8px;">✅ 任务已于 6月1日 18:30 完成</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:20px;">🔗 视频素材已上传：老板娘下班日常_v1_final.mp4</div>
                         
-                        <div style="font-size:18px; color:#fff; font-weight:600; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
-                            <span>${dayText}</span>
-                            <span style="font-size:12px; padding:4px 8px; background:rgba(16,185,129,0.1); border:1px solid var(--success); color:var(--success); border-radius:4px;">工作流进度监控</span>
-                        </div>
-
-                        <!-- 5-step Tabs -->
-                        <div style="display:flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom:20px;">
-                            <div class="vid-tab" id="vt-1" style="flex:1; text-align:center; padding:12px; cursor:pointer; color:var(--text-muted); font-size:13px; font-weight:500; transition:0.2s;" onclick="switchVidTab(1)">1. 抓取热点</div>
-                            <div class="vid-tab" id="vt-2" style="flex:1; text-align:center; padding:12px; cursor:pointer; color:var(--text-muted); font-size:13px; font-weight:500; transition:0.2s;" onclick="switchVidTab(2)">2. 个性化文案</div>
-                            <div class="vid-tab" id="vt-3" style="flex:1; text-align:center; padding:12px; cursor:pointer; color:var(--text-muted); font-size:13px; font-weight:500; transition:0.2s;" onclick="switchVidTab(3)">3. 拍摄指导</div>
-                            <div class="vid-tab" id="vt-4" style="flex:1; text-align:center; padding:12px; cursor:pointer; color:var(--text-muted); font-size:13px; font-weight:500; transition:0.2s;" onclick="switchVidTab(4)">4. 视频制作</div>
-                            <div class="vid-tab" id="vt-5" style="flex:1; text-align:center; padding:12px; cursor:pointer; color:var(--text-muted); font-size:13px; font-weight:500; transition:0.2s;" onclick="switchVidTab(5)">5. 平台分发</div>
-                        </div>
-
-                        <div style="flex:1; overflow-y:auto; padding-right:8px;" id="vid-tab-container">
-                            <!-- Tab 1 -->
-                            <div id="vc-1" style="display:none; animation:fadeIn 0.3s ease-out;">
-                                <div style="display:flex; gap:16px;">
-                                    <div class="data-card" style="flex:1; border-top:3px solid var(--primary); background:rgba(0,229,255,0.05);">
-                                        <div style="font-size:14px; color:#fff; margin-bottom:12px;">📊 抖音流量风口探测</div>
-                                        <div style="font-size:24px; color:var(--primary); font-weight:bold;">#被渣女逆袭# <span style="font-size:12px; font-weight:normal; color:var(--text-muted); background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; vertical-align:middle;">热度 ↑ 450%</span></div>
-                                        <div style="font-size:13px; color:var(--text-muted); margin-top:12px; line-height:1.6;">AI 判定此话题极易引发女性共鸣，非常适合引入抗衰/提亮类医美项目。昨日该话题同城播放量突破 500万。</div>
-                                    </div>
-                                    <div class="data-card" style="flex:1; border-top:3px solid var(--warning); background:rgba(251,191,36,0.05);">
-                                        <div style="font-size:14px; color:#fff; margin-bottom:12px;">🔍 小红书痛点挖掘</div>
-                                        <div style="font-size:24px; color:var(--warning); font-weight:bold;">"熬夜黄气" <span style="font-size:12px; font-weight:normal; color:var(--text-muted); background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; vertical-align:middle;">搜索量榜首</span></div>
-                                        <div style="font-size:13px; color:var(--text-muted); margin-top:12px; line-height:1.6;">评论区高频词为“分手后发光”、“暗沉退散”。与本门店【超皮秒】项目的核心卖点 100% 匹配。</div>
-                                    </div>
-                                </div>
-                                <div style="text-align:right; margin-top:24px;">
-                                    <button class="btn-primary" onclick="switchVidTab(2)">下一步：查看生成的个性化文案 →</button>
-                                </div>
-                            </div>
-
-                            <!-- Tab 2 -->
-                            <div id="vc-2" style="display:none; animation:fadeIn 0.3s ease-out;">
-                                <div class="data-card" style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.2); margin-bottom:20px;">
-                                    <div style="font-size:13px; color:var(--success); margin-bottom:8px;">🧠 智能生成公式：</div>
-                                    <div style="font-size:16px; color:#fff; font-weight:600;">[热点:被渣逆袭] + [IP:独立清醒老板娘] + [项目:超皮秒] = 专属高转爆款</div>
-                                </div>
-                                <div style="background:rgba(0,0,0,0.3); padding:24px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
-                                    <div style="font-size:15px; line-height:2.2; color:#fff;">
-                                        <span style="color:var(--text-muted); font-size:12px; border:1px solid var(--text-muted); padding:2px 6px; border-radius:4px; margin-right:8px;">0-3秒 痛点暴击</span>"为了个渣男把自己哭成黄脸婆，值得吗？姐妹们！"<br><br>
-                                        <span style="color:var(--text-muted); font-size:12px; border:1px solid var(--text-muted); padding:2px 6px; border-radius:4px; margin-right:8px;">4-15秒 方案引入</span>"今天必须带我发小体验咱店里的【超皮秒黑金版】。最好的报复不是原谅，而是你比原来更漂亮、更发光！"<br><br>
-                                        <span style="color:var(--text-muted); font-size:12px; border:1px solid var(--text-muted); padding:2px 6px; border-radius:4px; margin-right:8px;">16-45秒 价值升华</span>"大家看，这个特有的波长能直达真皮层，把那些暗沉直接击碎。女人，一定要学会投资自己。"
-                                    </div>
-                                </div>
-                                <div style="text-align:right; margin-top:24px;">
-                                    <button class="btn-primary" onclick="switchVidTab(3)">下一步：查看详细拍摄分镜 →</button>
-                                </div>
-                            </div>
-
-                            <!-- Tab 3 -->
-                            <div id="vc-3" style="display:none; animation:fadeIn 0.3s ease-out;">
-                                <div style="display:flex; gap:16px; margin-bottom:20px;">
-                                    <div class="data-card" style="flex:1; border-left:3px solid #00e5ff;">
-                                        <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:12px;">🎥 机位与运镜 (AI 规划)</div>
-                                        <div style="font-size:13px; color:var(--text-muted); line-height:1.8;">
-                                            <b>开场：</b>定点平视，推镜头入画。<br>
-                                            <b>中段：</b>手持跟拍，步伐要快要有气场。<br>
-                                            <b>结尾：</b>特写仪器与发小面部。
-                                        </div>
-                                    </div>
-                                    <div class="data-card" style="flex:1; border-left:3px solid var(--warning);">
-                                        <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:12px;">🎭 情绪与动作指导</div>
-                                        <div style="font-size:13px; color:var(--text-muted); line-height:1.8;">
-                                            <b>前3秒：</b>配合重重拍桌子的动作，表现出“恨铁不成钢”的愤怒。<br>
-                                            <b>中段：</b>走路带风，语速要快而坚定。<br>
-                                            <b>后段：</b>操作仪器时表现出“专业自信”的微笑。
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="text-align:center;">
-                                    <button class="btn-primary" style="padding:12px 32px; font-size:14px; background:transparent; border:1px solid var(--success); color:var(--success);" onclick="alert('分镜与脚本已成功同步至您的手机提词器 APP！')">📱 一键将脚本下发至手机提词器</button>
-                                </div>
-                                <div style="text-align:right; margin-top:24px;">
-                                    <button class="btn-primary" onclick="switchVidTab(4)">拍摄完了？进入制作与上传 →</button>
-                                </div>
-                            </div>
-
-                            <!-- Tab 4 -->
-                            <div id="vc-4" style="display:none; animation:fadeIn 0.3s ease-out;">
-                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
-                                    <div class="data-card" style="text-align:center; border:1px solid var(--primary); background:rgba(0,229,255,0.05); padding:32px 16px;">
-                                        <div style="font-size:40px; margin-bottom:16px;">🪄</div>
-                                        <div style="font-size:18px; color:#fff; font-weight:bold; margin-bottom:12px;">AI 一键成片 (插件生产)</div>
-                                        <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px; line-height:1.6;">使用您提前克隆好的**老板娘数字人分身**，系统将自动匹配话术并混剪门店空镜素材，3分钟出片。</div>
-                                        <button class="btn-primary" style="width:100%; padding:12px; font-size:14px;" onclick="alert('系统正在云端渲染数字人视频，预计需要 3 分钟，请稍候...')">立即启动 AI 生产</button>
-                                    </div>
-                                    <div class="data-card" style="text-align:center; border:1px dashed var(--success); background:rgba(16,185,129,0.05); padding:32px 16px;">
-                                        <div style="font-size:40px; margin-bottom:16px;">📤</div>
-                                        <div style="font-size:18px; color:#fff; font-weight:bold; margin-bottom:12px;">实拍视频上传打卡</div>
-                                        <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px; line-height:1.6;">若您刚才已按照【拍摄指导】用单反或手机完成了实拍，请将剪辑好的成片上传至此。</div>
-                                        <button class="btn-primary" style="width:100%; padding:12px; font-size:14px; background:var(--success); color:#000;" onclick="alert('视频上传成功！系统正在自动提取字幕并质检画面...')">选择本地文件上传</button>
-                                    </div>
-                                </div>
-                                <div style="text-align:right; margin-top:24px;">
-                                    <button class="btn-primary" onclick="switchVidTab(5)">视频已就绪，去全网分发 →</button>
-                                </div>
-                            </div>
-
-                            <!-- Tab 5 -->
-                            <div id="vc-5" style="display:none; animation:fadeIn 0.3s ease-out;">
-                                <div class="data-card" style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05);">
-                                    <div style="font-size:14px; color:#fff; margin-bottom:16px; font-weight:600;">矩阵账号就绪状态</div>
-                                    <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid rgba(255,255,255,0.05); background:rgba(255,255,255,0.02); border-radius:8px; margin-bottom:8px;">
-                                        <div style="display:flex; align-items:center; gap:12px;"><span style="font-size:24px;">🎵</span> <span style="color:#fff; font-size:14px; font-weight:500;">抖音 (智美星耀官方)</span></div>
-                                        <span style="color:var(--success); font-size:13px; font-weight:600;">✅ Token 正常，准许推流</span>
-                                    </div>
-                                    <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid rgba(255,255,255,0.05); background:rgba(255,255,255,0.02); border-radius:8px; margin-bottom:8px;">
-                                        <div style="display:flex; align-items:center; gap:12px;"><span style="font-size:24px;">📕</span> <span style="color:#fff; font-size:14px; font-weight:500;">小红书 (老板娘个人号)</span></div>
-                                        <span style="color:var(--success); font-size:13px; font-weight:600;">✅ Token 正常，准许推流</span>
-                                    </div>
-                                    <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:rgba(255,255,255,0.02); border-radius:8px;">
-                                        <div style="display:flex; align-items:center; gap:12px;"><span style="font-size:24px;">💬</span> <span style="color:#fff; font-size:14px; font-weight:500;">微信视频号 (门店企业)</span></div>
-                                        <span style="color:var(--success); font-size:13px; font-weight:600;">✅ Token 正常，准许推流</span>
-                                    </div>
-                                </div>
-                                <div style="display:flex; gap:16px; margin-top:24px;">
-                                    <button class="btn-primary" style="flex:1; padding:16px; font-size:14px; border:1px solid var(--text-muted); background:transparent; color:var(--text-muted);" onclick="alert('已加入定时发布队列，将于明日 08:00 准时发送。')">🕒 定时发布 (明日 8:00)</button>
-                                    <button class="btn-primary" style="flex:2; padding:16px; font-size:16px; font-weight:bold; background:var(--primary); color:#000; box-shadow:0 0 20px rgba(0,229,255,0.3);" onclick="alert('指令已下发！系统正在后台多线程进行全网矩阵推流分发！任务闭环完成。')">🚀 立即全网一键分发</button>
-                                </div>
-                            </div>
+                        <div style="background:rgba(16,185,129,0.1); padding:12px; border-radius:4px; width:100%; text-align:left; font-size:12px;">
+                            <div style="color:var(--success); font-weight:bold; margin-bottom:4px;">流转状态：</div>
+                            <div>- 视频素材就绪，已打卡。</div>
+                            <div>- 正在等待 AI 智能剪辑系统提取核心高光片段...</div>
+                            <div>- 预计明日早 8:00 自动推流至：抖音、小红书。</div>
                         </div>
                     </div>
                 `;
 
-                if (!window._vidTabFn) {
-                    window._vidTabFn = true;
-                    window.switchVidTab = function(idx) {
-                        for(let i=1; i<=5; i++) {
-                            const vt = document.getElementById('vt-'+i);
-                            const vc = document.getElementById('vc-'+i);
-                            if(vt) {
-                                vt.style.color = 'var(--text-muted)';
-                                vt.style.borderBottom = 'none';
-                            }
-                            if(vc) vc.style.display = 'none';
-                        }
-                        const actVt = document.getElementById('vt-'+idx);
-                        if(actVt) {
-                            actVt.style.color = 'var(--success)';
-                            actVt.style.borderBottom = '2px solid var(--success)';
-                        }
-                        const actVc = document.getElementById('vc-'+idx);
-                        if(actVc) actVc.style.display = 'block';
-                    }
-                }
-                setTimeout(() => window.switchVidTab(1), 10);
+                window._vidDay2 = `
+                    <div style="font-size:16px; color:#fff; font-weight:600; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; margin-bottom:16px;">🎬 Day 2: 闺蜜被渣带她变美 (今日待拍)</div>
+                    
+                    <div style="display:flex; gap:12px; margin-bottom:20px;">
+                        <span style="font-size:11px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">机位：平视/跟拍</span>
+                        <span style="font-size:11px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">时长预估：45秒</span>
+                        <span style="font-size:11px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px; color:var(--success);">爆款因子：情感共鸣 + 容貌反击</span>
+                    </div>
+
+                    <table style="width:100%; text-align:left; border-collapse:collapse; font-size:12px; color:#fff; margin-bottom:20px;">
+                        <thead><tr style="border-bottom:1px solid rgba(255,255,255,0.2); color:var(--success);"><th style="padding:8px; width:25%;">分镜/运镜提示</th><th style="padding:8px;">口播文案 & 动作要求</th></tr></thead>
+                        <tbody>
+                            <tr style="border-bottom:1px dashed rgba(255,255,255,0.1);">
+                                <td style="padding:12px 8px; color:var(--text-muted); vertical-align:top;"><b>0-3秒 (黄金前三秒)</b><br>推镜头入画，表情严肃</td>
+                                <td style="padding:12px 8px; line-height:1.6;"><b>(重重拍桌子)</b> "为了个渣男把自己哭成黄脸婆，值得吗？姐妹们！"</td>
+                            </tr>
+                            <tr style="border-bottom:1px dashed rgba(255,255,255,0.1);">
+                                <td style="padding:12px 8px; color:var(--text-muted); vertical-align:top;"><b>4-15秒</b><br>跟拍摄影机随走动，走向治疗室</td>
+                                <td style="padding:12px 8px; line-height:1.6;"><b>(边走边带风)</b> "今天必须带我发小体验咱店里的【超皮秒黑金版】。最好的报复不是原谅，而是你比原来更漂亮、更发光！"</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:12px 8px; color:var(--text-muted); vertical-align:top;"><b>16-45秒</b><br>特写仪器与发小面部</td>
+                                <td style="padding:12px 8px; line-height:1.6;"><b>(配合操作师打光)</b> "大家看，这个特有的波长能直达真皮层，把那些暗沉直接击碎。女人，一定要学会投资自己..."</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="display:flex; gap:12px; margin-top:auto;">
+                        <button class="btn-primary" style="flex:1; background:transparent; border:1px solid var(--success); color:var(--success); padding:10px; font-weight:600;" onclick="alert('提示词与分镜脚本已下发至相关人员手机提词器设备！')">📱 发送至手机提词器</button>
+                        <button class="btn-primary" style="flex:1; background:var(--success); color:#000; font-weight:bold; padding:10px; border:none; box-shadow:0 0 10px rgba(16,185,129,0.3);" onclick="document.getElementById('video-detail-panel').innerHTML=window._vidDay1; alert('文件上传成功！任务打卡闭环。')">📤 上传已拍视频并完成打卡</button>
+                    </div>
+                `;
+
+                window._vidDay3 = `
+                    <div style="font-size:16px; color:#fff; font-weight:600; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; margin-bottom:16px;">❗ Day 3: 揭秘医美行业的避坑指南 (待拍摄)</div>
+                    <div style="font-size:13px; color:var(--text-muted); line-height:1.8; margin-bottom:20px;">
+                        ⚠️ 系统提示：该任务计划于明日（6月3日）执行。<br>
+                        文案大纲预生成完成，侧重于“避开无效美白坑”，建立老板娘的专家人设。
+                    </div>
+                    <div style="opacity:0.4; pointer-events:none;">
+                        <table style="width:100%; text-align:left; border-collapse:collapse; font-size:12px; color:#fff;">
+                            <thead><tr style="border-bottom:1px solid rgba(255,255,255,0.2); color:var(--success);"><th style="padding:8px; width:25%;">分镜预演</th><th style="padding:8px;">大纲主旨</th></tr></thead>
+                            <tbody>
+                                <tr style="border-bottom:1px dashed rgba(255,255,255,0.1);">
+                                    <td style="padding:12px 8px;">仪器横评比对</td>
+                                    <td style="padding:12px 8px;">揭露低价水光的套路，为什么打完脸更干。展示正规军的透明度。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top:auto;">
+                        <button class="btn-primary" style="width:100%; background:transparent; border:1px solid var(--text-muted); color:var(--text-muted); padding:10px; cursor:not-allowed;" onclick="alert('文案尚未最终定稿且未到执行日，强行提前打卡可能会影响矩阵连贯算法。')">🎬 我要提前拍摄并打卡</button>
+                    </div>
+                `;
+
+                // Set initial content to Day 2
+                setTimeout(() => { 
+                    const panel = document.getElementById('video-detail-panel');
+                    if(panel) panel.innerHTML = window._vidDay2; 
+                }, 10);
 
             } else if (type === 'crm') {
                 wsTitle.innerHTML = '🗂️ 传统视图：档案录入工具';
@@ -936,57 +628,6 @@
             } else if (type === 'traffic') {
                 wsTitle.innerHTML = '🔮 AI 深度分析推演';
                 wsContent.innerHTML = `<div class="gen-widget"><div class="data-card"><div style="font-size:14px; color:#fff;">流量分析报告已生成</div><div style="font-size:13px; color:var(--text-muted); margin-top:8px;">同城“美白”关键词热度上升 400%，建议马上开拍对应短视频截流。</div></div></div>`;
-            } else if (type === 'marketing_setup') {
-                wsTitle.innerHTML = '🔥 营销玩法配置中心 (强裂变/排队免单)';
-                wsContent.innerHTML = `
-                    <div class="gen-widget" style="height:100%; display:flex; flex-direction:column; overflow-y:auto;">
-                        <div class="data-card" style="border:1px solid #ef4444; background:rgba(239,68,68,0.05); margin-bottom:16px;">
-                            <div style="font-size:16px; font-weight:600; color:#ef4444; margin-bottom:8px;">⚠️ 高阶玩法风控提示</div>
-                            <div style="font-size:13px; color:#fff; line-height:1.6;">当前选中的玩法极具裂变性，可能触发平台风控。AI 已为您开启【安全合规护盾】，所有现金流均在底层以“充值卡/服务体验券”形式流转，防范资金盘风险。</div>
-                        </div>
-
-                        <div style="display:flex; gap:16px; margin-bottom:16px;">
-                            <div class="data-card" style="flex:1;">
-                                <div style="font-size:14px; font-weight:bold; color:#fff; margin-bottom:12px;">规则一：排队免单机制设置</div>
-                                <div style="margin-bottom:12px;">
-                                    <label style="font-size:12px; color:var(--text-muted);">成团触发人数</label>
-                                    <input type="text" value="满 7 人成团，第 1 人免单" style="width:100%; margin-top:4px; background:rgba(0,0,0,0.3); border:1px dashed #475569; padding:8px; color:#fff; border-radius:4px; font-size:13px; outline:none; transition:0.3s;" onfocus="this.style.borderColor='#00e5ff'" title="可直接编辑">
-                                </div>
-                                <div>
-                                    <label style="font-size:12px; color:var(--text-muted);">参与门槛金额 (沉淀资金)</label>
-                                    <input type="text" value="¥ 398.00" style="width:100%; margin-top:4px; background:rgba(0,0,0,0.3); border:1px dashed #475569; padding:8px; color:#fff; border-radius:4px; font-size:13px; outline:none; transition:0.3s;" onfocus="this.style.borderColor='#00e5ff'" title="可直接编辑">
-                                </div>
-                            </div>
-                            
-                            <div class="data-card" style="flex:1;">
-                                <div style="font-size:14px; font-weight:bold; color:#fff; margin-bottom:12px;">规则二：兜底退出机制 (保命防线)</div>
-                                <div style="font-size:12px; color:var(--warning); margin-bottom:8px;">* 若排队超过 30 天未成团的自动补偿方案，绝不退现。</div>
-                                <div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:4px; margin-bottom:8px; font-size:13px; color:#fff;">
-                                    ✅ 获得原购项目：价值 ¥398 极速焕颜 1 次
-                                </div>
-                                <div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:4px; font-size:13px; color:#10b981;">
-                                    🎁 触发超额权益：赠送价值 ¥1980 基础补水年卡 (10次)
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="data-card" style="flex:1; border-top: 3px solid #ef4444; display:flex; flex-direction:column;">
-                            <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:12px;">✅ AI 智能体执行链路挂载</div>
-                            <ul style="font-size:13px; color:var(--text-muted); line-height:2; margin:0; padding-left:20px;">
-                                <li><b>进流拦截：</b>客户参与排队后，智能体将自动弹出，引导客户建立“极速健康档案”。</li>
-                                <li><b>拓客卡分发：</b>建档后，AI 将自动向该客户发放【二级裂变拓客卡】（佣金转为体验金）。</li>
-                                <li><b>情绪安抚：</b>排队流转缓慢时，AI 会自动按兜底补偿机制下发权益，阻止客诉升级。</li>
-                            </ul>
-                            <div style="display:flex; gap:12px; margin-top:auto;">
-                                <button class="btn-primary" style="flex:1; padding:12px; background:transparent; border:1px dashed #475569; color:#cbd5e1; font-weight:bold; font-size:13px;" onclick="fillInput('我觉得 398 门槛有点高，降到 198 试试，同时修改成团人数。')">🗣️ 告诉AI调整方案</button>
-                                <button class="btn-primary" style="flex:1; padding:12px; background:transparent; border:1px solid #ef4444; color:#ef4444; font-weight:bold; font-size:13px;" onclick="window.open('场景演示_C端营销闭环.html', '_blank')">📱 内部测试体验</button>
-                                <button class="btn-primary" style="flex:1; padding:12px; background:#ef4444; color:#fff; font-weight:bold; border:none; font-size:13px;" onclick="alert('活动已发布！大批流量正在涌入！将为您自动切换至数据大盘监控。'); if(!isClassicMode) toggleUI();">🚀 确认全网发布</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
             }
         }
-    </script>
-</body>
-</html>
+    
