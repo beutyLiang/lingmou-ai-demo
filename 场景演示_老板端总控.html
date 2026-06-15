@@ -896,7 +896,6 @@
                                 <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:16px; align-self:flex-start;">📱 门店专属定向海报 (带引流活码)</div>
                                 <div style="flex:1; width:100%; max-width: 280px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,229,255,0.1); position:relative;">
                                     <img src="anti_aging_poster.png" alt="引流海报" style="width:100%; height:100%; object-fit:cover;">
-                                    <!-- 模拟二维码区域 -->
                                     <div style="position:absolute; bottom:16px; right:16px; width:48px; height:48px; background:#fff; padding:4px; border-radius:4px;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M17 14h4M14 17h.01M17 17h4M14 20h.01M17 20h4"/></svg>
                                     </div>
@@ -932,7 +931,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
                         </div>
                     </div>
                 `;
@@ -989,6 +987,7 @@
                         </div>
                     </div>
                 `;
+            }
                         } else if (type === 'crm_radar') {
                 wsTitle.innerHTML = isClassicMode ? '📊 传统 CRM 管理系统' : '📊 客户全维洞察大盘 (CRM名册)';
                 wsContent.innerHTML = `
